@@ -130,6 +130,7 @@ td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:n
     <button class="tab" role="tab" data-view="devs" aria-selected="true">Забудовники</button>
     <button class="tab" role="tab" data-view="map" aria-selected="false">Карта ЖК</button>
     <button class="tab" role="tab" data-view="eos" aria-selected="false">єОселя</button>
+    <button class="tab" role="tab" data-view="banks" aria-selected="false">Банки для єОселі</button>
     <button class="tab" role="tab" data-view="revs" aria-selected="false">Усі відгуки</button>
     <button class="tab" role="tab" data-view="cases" aria-selected="false">Проблемні об'єкти</button>
     <button class="tab" role="tab" data-view="method" aria-selected="false">Джерела і метод</button>
@@ -186,6 +187,52 @@ td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:n
       <p>Під іпотеку єОселя (3% або 7% річних) підходять лише об'єкти, які акредитував банк-партнер. Нижче ЖК, щодо яких агрегатори або сам забудовник заявляють про участь у програмі. Перед угодою перевірте статус в Ощадбанку, ПриватБанку, Укргазбанку чи іншому банку-учаснику.</p>
     </div>
     <div class="tbl-wrap"><table id="eosTable"></table></div>
+  </section>
+
+  <section class="view" id="view-banks" hidden>
+    <div class="prose">
+      <p><b>Профіль:</b> програміст, ФОП 3-ї групи, валютна виручка на ФОП-рахунок протягом 6 років. Дані станом на жовтень 2026 року.</p>
+
+      <h2>1. Яка ставка вам доступна</h2>
+      <p>Якщо ви не належите до пільгових категорій (військові, ветерани, медики, педагоги, науковці), ваша ставка <b>7% на перші 10 років, далі 10%</b>, строк до 20 років. Програма не дає ІТ-фахівцям окремої категорії. Право на 7% мають громадяни, у яких немає житла або є житло, менше за норму: 52,5 м² на одну особу чи подружжя плюс 21 м² на кожного наступного члена сім'ї. Продаж або дарування житла тепер перевіряють за 36 місяців, а не за 12. Перший внесок від 20%, для молоді до 25 років від 10%. Заявку подають у «Дії».
+      <span class="src"><a href="https://tsn.ua/exclusive/yeoselia-u-2026-rotsi-iak-zminylysia-umovy-prohramy-kupivli-dostupnoho-zytla-3039221.html" target="_blank" rel="noopener">ТСН ↗</a> · <a href="https://24tv.ua/realestate24/zmini-yeoseli-lyutomu-2026-roku-yaki-obmezhennya-ploshhi-zhitla_n3006244" target="_blank" rel="noopener">24 Канал ↗</a> · <a href="https://privatbank.ua/kredyty/eoselya" target="_blank" rel="noopener">ПриватБанк ↗</a> · <a href="https://forbes.ua/news/uriad-onoviv-jeoseliu-molod-zmoze-vziati-ipoteku-pid-7-na-persi-tri-roki-19102026-43090" target="_blank" rel="noopener">Forbes, зміни з жовтня 2026 ↗</a></span></p>
+
+      <h2>2. ФОП і валютний дохід</h2>
+      <ul>
+        <li>Кредит оформлюють на вас як фізичну особу. Статус ФОП не заважає, але дохід треба підтвердити офіційно. Банки просять декларації платника єдиного податку з Електронного кабінету (мінімум за останній рік або дохід за 6 місяців), виписки з рахунку та кредитну історію. <span class="src"><a href="https://help.sensebank.com.ua/uk_UA/4418440120338-28f2f8be/4416664813842" target="_blank" rel="noopener">Sense Bank ↗</a> · <a href="https://zaxid.net/programa_yeoselya_chomu_bank_ne_pogodzhuye_kredit_poyasnennya_poradi_n1611117" target="_blank" rel="noopener">ZAXID.NET ↗</a> · <a href="https://minfin.com.ua/ua/company/privatbank/review/422682/" target="_blank" rel="noopener">Мінфін, відгук ↗</a></span></li>
+        <li>Валютна виручка рахується в гривні за курсом НБУ на дату зарахування, і саме ця сума стоїть у декларації. Банк бачить дохід у гривні, тож валюта сама по собі не проблема. <span class="src"><a href="https://news.dtkt.ua/simple/individual-single-tax/70434-iak-viznacajetsia-suma-doxodu-fop-jedinnika-otrimana-v-valiuti" target="_blank" rel="noopener">ДТКТ ↗</a></span></li>
+        <li>Ризик для вас у такому. Гроші, що лежать на Payoneer чи Wise і не потрапили в декларацію, банк доходом не визнає. Перед подачею звірте, щоб декларації за 2025–2026 роки покривали весь дохід, і замовте в податковій довідку про доходи. <span class="src"><a href="https://taxer.ua/uk/kb/dovidka-pro-dokhody-dlia-banku-abo-vizy" target="_blank" rel="noopener">Taxer ↗</a> · <a href="https://yankiv.com/yak-vklyuchaty-v-dohid-fop-koshty-z-wise-revolut-payoneer/" target="_blank" rel="noopener">YANKIV ↗</a></span></li>
+        <li>Шість років безперервної роботи ФОПом добре показують стабільність доходу. Найчастіше банки відмовляють через погану кредитну історію і замалий підтверджений дохід, а не через тип зайнятості. Після відмови не подавайтеся одразу в інший банк. Банки обмінюються даними про відмови, тому краще спершу оскаржити рішення. <span class="src"><a href="https://finclub.net/news/banky-nazvaly-osnovni-prychyny-vidmovy-pretendentam-na-pilhovu-ipoteku.html" target="_blank" rel="noopener">Фінклуб ↗</a> · <a href="https://zaxid.net/programa_yeoselya_chomu_bank_ne_pogodzhuye_kredit_poyasnennya_poradi_n1611117" target="_blank" rel="noopener">ZAXID.NET ↗</a></span></li>
+      </ul>
+
+      <h2>3. Ліміт ціни в Чернівцях</h2>
+      <p>Гранична вартість для Чернівецької області з 1 липня 2026 року становить <b>50 376 грн/м²</b>. Програма дозволяє перевищити її не більше ніж на 10%, тобто фактична ціна має бути <b>до ≈55 400 грн/м²</b>. Дорожчі квартири під єОселю не підходять. <span class="src"><a href="https://thepage.ua/ua/news/novi-limiti-yeoselya-2026-granichna-vartist-kvadrata-po-regionah-ukrayini" target="_blank" rel="noopener">ThePage ↗</a> · <a href="https://ukrfinzhytlo.in.ua/e-oselia/" target="_blank" rel="noopener">Укрфінжитло ↗</a></span></p>
+      <p>За цінами з вкладки «Забудовники» вкладаються, зокрема: «Київський» (від 48 850), «Senator» (від 42 200), «Панорама» (26 800–35 741), «Смарагд» (від 48 565), «Кришталеве озеро», «Зелені Пагорби». На межі: «Онікс» (53 300–56 000) і VIVA (53 800–57 750). Не вкладаються: «Аметист» (≈60 400), Sapfire Towers (≈58 300), Vodogray UN1T (від 62 720), Skyline (від 69 450), Неосіті (≈60 300).</p>
+    </div>
+
+    <h3 style="margin-top:24px">Порівняння банків</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Банк</th><th>Що відомо</th><th>Для вас</th></tr></thead>
+      <tbody>
+        <tr><td><b>Ощадбанк</b></td><td>Найбільший оператор програми, понад 40% усіх кредитів. Лідер і у 2026 році. У відгуках хвалять консультації та регіональні офіси. Найширший перелік акредитованих новобудов.</td><td><span class="pill ok">перший кандидат</span></td></tr>
+        <tr><td><b>Укргазбанк</b></td><td>Другий-третій за обсягом (≈23–25%). За даними агрегатора, разова комісія 1% від суми кредиту, щомісячної комісії немає.</td><td><span class="pill ok">другий кандидат</span></td></tr>
+        <tr><td><b>ПриватБанк</b></td><td>≈17–30% кредитів. Сума від 100 тис. до 5 млн грн, строк до 240 міс., перший внесок від 20%. Відгуки змішані: скаржаться на затримки і на те, що в регіоні програмою займається один співробітник. Практик-юрист, навпаки, хвалить. У 2024 році Чернівецька область мала регіональну програму саме з Приватом.</td><td><span class="pill warn">якщо ФОП-рахунок у Приваті</span></td></tr>
+        <tr><td><b>Sense Bank</b></td><td>≈13% ринку. Практик відзначає налагоджену комунікацію. Має публічний перелік документів.</td><td><span class="pill info">варіант</span></td></tr>
+        <tr><td>Глобус, Sky Bank, Таскомбанк, BISBANK, Кредит Дніпро, Радабанк</td><td>Малі частки. Даних про умови для ФОП і швидкість розгляду майже немає.</td><td><span class="pill neutral">запасні</span></td></tr>
+      </tbody></table></div>
+    <p class="src">Джерела: <a href="https://forbes.ua/news/eoselya-kilkist-vidanikh-pilgovikh-kreditiv-na-zhitlo-perevishchila-10-000-14052024-21154" target="_blank" rel="noopener">Forbes (частки)</a> · <a href="https://banksrating.com.ua/analytics/forpersonal/kredyty-pidbyrayutsya-do-steli/" target="_blank" rel="noopener">Banksrating</a> · <a href="https://realty.novyny.live/ieoselia-dlia-viiskovikh-v-iakikh-bankakh-vidaiut-naibilshe-kreditiv-325185.html" target="_blank" rel="noopener">Новини.LIVE (квітень 2026)</a> · <a href="https://minfin.com.ua/ua/company/oschadbank/review/402570/" target="_blank" rel="noopener">Мінфін: Ощад</a> · <a href="https://minfin.com.ua/ua/company/privatbank/review/362195/" target="_blank" rel="noopener">Мінфін: Приват</a> · <a href="https://kosht.media/chy-spravdi-dostupna-ipoteka-vse-shcho-treba-znaty-pro-prohramu-yeoselia-interv-iu-z-praktykom/" target="_blank" rel="noopener">Kosht (практик)</a> · <a href="https://bankchart.com.ua/zhile_v_kredit/tarify/org/239" target="_blank" rel="noopener">Bankchart: Укргаз</a> · <a href="https://armyinform.com.ua/2024/03/28/cherniveczka-oblast-znyzyt-do-0-stavku-za-programoyu-yeoselya-dlya-vijskovyh/" target="_blank" rel="noopener">АрміяInform (регіональна програма)</a></p>
+
+    <div class="prose">
+      <h2>4. Що робити</h2>
+      <ol>
+        <li><b>Спершу оберіть ЖК, а не банк.</b> Новобудову акредитує конкретний банк. Якщо ваш ЖК акредитував лише Ощад, кредит дасть тільки Ощад. Запитайте у відділі продажу, у яких банках об'єкт акредитовано.</li>
+        <li>Серед цих банків надайте перевагу тому, де відкрито ваш ФОП-рахунок. Банк бачить ваші надходження за 6 років, і перевірка фінмоніторингу проходить простіше. Це моє припущення: публічних даних про такий бонус банки не дають.</li>
+        <li>Якщо вибір є, найнадійніший за статистикою і відгуками Ощадбанк, далі Укргазбанк.</li>
+        <li>Документи: паспорт, РНОКПП, декларації ФОП щонайменше за останній рік (краще за 2 роки), довідка про доходи з податкової, виписки з рахунків, документи про відсутність житла або його площу.</li>
+        <li>Приклад для Чернівців. Квартира 52,5 м² по 50 000 грн коштує ≈2,63 млн грн. Внесок 20% становить ≈525 тис., кредит ≈2,1 млн. Платіж ≈16,3 тис. грн на місяць перші 10 років (7%) і ≈18,5 тис. після (10%), без страховок і комісій.</li>
+        <li>Закладіть у бюджет супутні витрати: оцінку, страхування, нотаріуса, разову комісію банку (≈1%).</li>
+      </ol>
+    </div>
   </section>
 
   <section class="view" id="view-revs" hidden>
@@ -801,5 +848,5 @@ $("#method").innerHTML = `
 /* ---------- СТАРТ ---------- */
 renderList(); renderDetail(); drawMap(); renderAllRevs();
 const v0 = (location.hash||"").slice(1) || store.get("che-view");
-if (["devs","map","eos","revs","cases","method"].includes(v0)) showView(v0);
+if (["devs","map","eos","banks","revs","cases","method"].includes(v0)) showView(v0);
 </script>
