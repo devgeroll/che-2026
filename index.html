@@ -1,0 +1,805 @@
+<title>Забудовники Чернівців</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: робочий інструмент. Зверху зведення, далі вкладки; у «Забудовниках» список зліва, картка справа (на телефоні в одну колонку). */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --surface-2:#e8edeb; --line:#d3dbd8;
+  --fg:#16211e; --muted:#5a6964; --accent:#0d6b58; --accent-ink:#ffffff; --accent-soft:#d6ece6;
+  --ok:#1f7a3a; --ok-soft:#dff1e3; --warn:#9a6200; --warn-soft:#fbecd0; --bad:#b0302a; --bad-soft:#f8dedb; --info:#2c5aa0; --info-soft:#dfe8f6;
+  --river:#8fb8d6; --map-bg:#eef2ef; --road:#cfd8d4;
+  --f-display:"Unbounded", "Onest", system-ui, sans-serif;
+  --f-body:"Onest", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1715; --surface:#16211e; --surface-2:#1d2a27; --line:#2b3a36;
+  --fg:#e3ece9; --muted:#97a8a2; --accent:#4fc2a5; --accent-ink:#0b1513; --accent-soft:#173a32;
+  --ok:#6fd08a; --ok-soft:#173523; --warn:#f0b54c; --warn-soft:#3a2c10; --bad:#f08079; --bad-soft:#3d1a18; --info:#8fb3f0; --info-soft:#1a2740;
+  --river:#2f5b7a; --map-bg:#13201d; --road:#26342f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1715; --surface:#16211e; --surface-2:#1d2a27; --line:#2b3a36;
+  --fg:#e3ece9; --muted:#97a8a2; --accent:#4fc2a5; --accent-ink:#0b1513; --accent-soft:#173a32;
+  --ok:#6fd08a; --ok-soft:#173523; --warn:#f0b54c; --warn-soft:#3a2c10; --bad:#f08079; --bad-soft:#3d1a18; --info:#8fb3f0; --info-soft:#1a2740;
+  --river:#2f5b7a; --map-bg:#13201d; --road:#26342f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{padding-block:28px 8px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(1.5rem,3.2vw,2.3rem);letter-spacing:-.01em;margin:0 0 6px;text-wrap:balance}
+.lede{color:var(--muted);max-width:72ch;margin:0}
+.stats{display:flex;flex-wrap:wrap;gap:10px 28px;margin:18px 0 6px}
+.stat b{display:block;font-family:var(--f-mono);font-size:1.35rem;font-weight:600}
+.stat span{color:var(--muted);font-size:.82rem}
+.notice{margin-top:14px;background:var(--warn-soft);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;font-size:.88rem;max-width:100%}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-top:16px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
+.tab{appearance:none;border:0;background:none;color:var(--muted);font:600 .92rem var(--f-body);padding:12px 12px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+main{padding-block:20px 48px}
+.view[hidden]{display:none}
+/* developers view */
+.dev-layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.dev-layout{grid-template-columns:minmax(0,1fr)}}
+.filters{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.filters input[type=search],.filters select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit}
+.chk{display:flex;align-items:center;gap:8px;font-size:.9rem}
+.dev-list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 220px);overflow-y:auto;padding-right:2px}
+@media (max-width:860px){.dev-list{max-height:none}}
+.dev-item{display:grid;grid-template-columns:1fr auto;gap:2px 10px;text-align:left;width:100%;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:10px 12px;cursor:pointer;font:inherit}
+.dev-item:hover{border-color:var(--accent)}
+.dev-item[aria-current="true"]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.dev-item .n{font-weight:600}
+.dev-item .s{grid-column:1/-1;color:var(--muted);font-size:.8rem}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:.74rem;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap;line-height:1.6}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--info-soft);color:var(--info)} .pill.neutral{background:var(--surface-2);color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+.detail{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px clamp(16px,3vw,28px);min-width:0}
+.detail h2{font-family:var(--f-display);font-weight:700;font-size:1.45rem;margin:0 0 4px;text-wrap:balance}
+.detail h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:26px 0 10px;font-weight:700}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin:0}
+.kv div{background:var(--surface-2);border-radius:8px;padding:8px 10px}
+.kv dt{font-size:.74rem;color:var(--muted)} .kv dd{margin:0;font-weight:600;font-family:var(--f-mono);font-size:.9rem}
+.summary{max-width:75ch}
+.timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.timeline li{display:grid;grid-template-columns:86px minmax(0,1fr);gap:12px}
+.timeline .y{font-family:var(--f-mono);font-weight:600;color:var(--accent)}
+.src{font-size:.78rem;color:var(--muted)}
+.src a{color:var(--muted)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:640px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.reviews{display:flex;flex-direction:column;gap:10px}
+.rev{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;grid-template-columns:4px minmax(0,1fr);gap:10px}
+.rev .bar{border-radius:2px;background:var(--line)}
+.rev.pos .bar{background:var(--ok)} .rev.neg .bar{background:var(--bad)} .rev.mix .bar{background:var(--warn)} .rev.rating .bar{background:var(--info)}
+.rev q{quotes:"«" "»"}
+.rev .t{margin:0 0 4px}
+.rev .m{font-size:.78rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px}
+.empty{color:var(--muted);font-style:italic}
+/* map */
+.map-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.map-tools select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit;max-width:100%}
+.map-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+@media (max-width:860px){.map-grid{grid-template-columns:minmax(0,1fr)}}
+.map-box{background:var(--map-bg);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.map-box svg{display:block;width:100%;height:auto}
+.map-box text{font-family:var(--f-body);fill:var(--muted)}
+.mk{cursor:pointer}
+.mk circle{stroke:var(--surface);stroke-width:2}
+.mk:hover circle,.mk.sel circle{stroke:var(--fg);stroke-width:3}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.side-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-width:0}
+.side-card h4{margin:0 0 4px;font-size:1.05rem}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;padding:7px 12px;border-radius:8px;font-size:.86rem;border:0;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+/* cases */
+.cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;min-width:0}
+.case h3{margin:6px 0 6px;font-size:1.05rem}
+.case ul{margin:6px 0 0;padding-left:18px}
+.prose{max-width:75ch}
+.prose h2{font-family:var(--f-display);font-size:1.2rem;margin:24px 0 8px}
+.all-rev-tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.all-rev-tools select,.all-rev-tools input{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit}
+.rev .dev{font-weight:600;color:var(--fg)}
+@media (prefers-reduced-motion:no-preference){.dev-item,.btn{transition:border-color .15s, box-shadow .15s}}
+</style>
+
+<header class="top wrap">
+  <h1>Забудовники Чернівців: історія, ЖК, ціни, відгуки</h1>
+  <p class="lede">Довідник багатоквартирних забудовників Чернівців за 2016–2026 роки. Для кожного: історія, житлові комплекси, ціни за м², розташування на карті, участь у програмі єОселя та відгуки з посиланнями на джерела. Дані зібрано 25 жовтня 2026 року.</p>
+  <div class="stats" id="stats"></div>
+  <div class="notice"><b>Як читати дані.</b> Ціни й терміни здачі взято з агрегаторів (DIM.RIA, ЛУН, Korter, Bild, NOVOBUDOVY, vn.com.ua), і між сайтами вони часто не збігаються. Тому для кожного ЖК наведено діапазон і джерело. Відгуки позначено як <b>цитату</b> (дослівний фрагмент) або <b>переказ</b> (зміст відгуку своїми словами). Позначка єОселя означає, що агрегатор або забудовник заявляє про акредитацію. Перевіряйте її в банку-партнері перед угодою. Точки на карті розставлено приблизно, за назвою вулиці. Точну адресу відкривайте кнопкою «Google Maps».</div>
+</header>
+
+<nav class="tabs" aria-label="Розділи">
+  <div class="wrap" role="tablist">
+    <button class="tab" role="tab" data-view="devs" aria-selected="true">Забудовники</button>
+    <button class="tab" role="tab" data-view="map" aria-selected="false">Карта ЖК</button>
+    <button class="tab" role="tab" data-view="eos" aria-selected="false">єОселя</button>
+    <button class="tab" role="tab" data-view="revs" aria-selected="false">Усі відгуки</button>
+    <button class="tab" role="tab" data-view="cases" aria-selected="false">Проблемні об'єкти</button>
+    <button class="tab" role="tab" data-view="method" aria-selected="false">Джерела і метод</button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="view" id="view-devs">
+    <div class="dev-layout">
+      <aside>
+        <div class="filters">
+          <label class="src" for="q">Пошук за назвою, ЖК або вулицею</label>
+          <input type="search" id="q" placeholder="напр. Руська, Київський, Родоліт">
+          <label class="src" for="risk">Репутація</label>
+          <select id="risk">
+            <option value="">Усі забудовники</option>
+            <option value="ok">Без відомих проблем</option>
+            <option value="warn">Змішані відгуки / затримки</option>
+            <option value="bad">Заморожені об'єкти / кримінальні справи</option>
+            <option value="info">Мало даних</option>
+          </select>
+          <label class="chk"><input type="checkbox" id="eosOnly"> Лише з ЖК під єОселю</label>
+        </div>
+        <div class="dev-list" id="devList" role="list"></div>
+      </aside>
+      <article class="detail" id="detail" aria-live="polite"></article>
+    </div>
+  </section>
+
+  <section class="view" id="view-map" hidden>
+    <div class="map-tools">
+      <label for="mapDev" class="src">Забудовник</label>
+      <select id="mapDev"><option value="">Усі забудовники</option></select>
+      <label class="chk"><input type="checkbox" id="mapEos"> Лише єОселя</label>
+      <label class="chk"><input type="checkbox" id="mapActive"> Лише ті, що будуються</label>
+    </div>
+    <div class="map-grid">
+      <div>
+        <div class="map-box"><svg id="map" viewBox="0 0 1000 800" role="img" aria-label="Схема Чернівців з житловими комплексами"></svg></div>
+        <div class="legend">
+          <span><i class="dot" style="color:var(--ok)"></i>забудовник без відомих проблем</span>
+          <span><i class="dot" style="color:var(--warn)"></i>змішані відгуки або затримки</span>
+          <span><i class="dot" style="color:var(--bad)"></i>заморожено або кримінальна справа</span>
+          <span><i class="dot" style="color:var(--info)"></i>мало даних</span>
+          <span>◆ кільце навколо точки: єОселя</span>
+        </div>
+      </div>
+      <div class="side-card" id="mapSide"><p class="empty">Натисніть точку на схемі, щоб побачити ЖК, ціну та посилання на точну адресу.</p></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-eos" hidden>
+    <div class="prose">
+      <p>Під іпотеку єОселя (3% або 7% річних) підходять лише об'єкти, які акредитував банк-партнер. Нижче ЖК, щодо яких агрегатори або сам забудовник заявляють про участь у програмі. Перед угодою перевірте статус в Ощадбанку, ПриватБанку, Укргазбанку чи іншому банку-учаснику.</p>
+    </div>
+    <div class="tbl-wrap"><table id="eosTable"></table></div>
+  </section>
+
+  <section class="view" id="view-revs" hidden>
+    <div class="all-rev-tools">
+      <select id="revTone" aria-label="Тон відгуку">
+        <option value="">Усі відгуки</option><option value="pos">Позитивні</option><option value="neg">Негативні</option><option value="mix">Змішані</option><option value="rating">Лише рейтинги</option>
+      </select>
+      <input type="search" id="revQ" placeholder="Пошук у відгуках" aria-label="Пошук у відгуках">
+    </div>
+    <div class="reviews" id="allRevs"></div>
+  </section>
+
+  <section class="view" id="view-cases" hidden>
+    <p class="prose">Найбільші скандали на ринку чернівецьких новобудов за 2016–2026 роки за даними місцевих ЗМІ та прокуратури. Підозра або обвинувачення ще не означає вироку.</p>
+    <div class="cases" id="cases"></div>
+  </section>
+
+  <section class="view" id="view-method" hidden>
+    <div class="prose" id="method"></div>
+  </section>
+</main>
+
+<script>
+/* ---------- ДАНІ ---------- */
+const DEV = [
+{
+  id:"rodolit", name:"Родоліт (Родоліт-груп)", since:"2003", hq:"вул. Рівненська, 12Б", risk:"ok",
+  site:"https://rodolit-grup.com.ua/",
+  summary:"Найбільший місцевий забудовник. За даними самої компанії, понад 100 проєктів і близько 150 тис. м² на Буковині. Окремо понад 15 років будує й ремонтує дороги. На агрегаторах найвищі рейтинги серед чернівецьких забудовників, проблемних об'єктів DIM.RIA не фіксує. Працює з єОселею.",
+  ratings:[["DIM.RIA","94% (продано 3 з 8 об'єктів)"],["TOP20","4,9 з 5 (37 відгуків)"],["NOVOBUDOVY","4,7 з 5 (45 думок)"]],
+  history:[
+    ["2003","Компанія виходить на буковинський ринок житлової та комерційної нерухомості.","https://molbuk.ua/news/299785-budivelna-kompaniia-rodolit-iakisne-zhytlo-vid-nadiinogo-zabudovnyka-ponad-100-proiektiv-na-bukovyni-za-20-rokiv.html"],
+    ["2016–2021","Зводить ЖК «Зелені Пагорби» біля Прута. Житловий фонд від 2021 року, у відгуках скаржаться на довге будівництво.","https://lun.ua/uk/%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B6-%D0%BA%D0%B2%D0%B0%D1%80%D1%82%D0%B8%D1%80-%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B8%D1%86%D1%8C%D0%BA%D0%B8%D0%B9-%D0%BF%D1%80%D0%BE%D0%B2-%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96"],
+    ["2023–2024","Публічно розповідає про продаж квартир за єОселею. Отримує нагороду «Народний бренд» як кращий забудовник (рекламний матеріал).","https://molbuk.ua/news/302872-kvartyry-pid-3-detalno-pro-programu-ieoselia-u-chernivciakh-rozpoviv-krashchyi-zabudovnyk-za-versiieu-konkursu-narodnyi-brend-bk-rodolit.html"],
+    ["2025–2026","Одночасно будує серію ЖК «Аметист», «Смарагд», «Онікс», Sapfire Towers. «Аметист» планують здати в 1 кв. 2027.","https://dom.ria.com/uk/novostroyka-zhk-ametyst-11008/"]
+  ],
+  projects:[
+    {n:"ЖК Аметист", a:"Чернівці (адресу уточнюйте)", st:"будується, здача 1 кв. 2027", p:"60 413–60 480 грн/м² (~$1 350)", eos:false, ll:null, src:"https://dom.ria.com/uk/novostroyka-zhk-ametyst-11008/"},
+    {n:"ЖК Смарагд", a:"Чернівці", st:"будується", p:"48 565–56 448 грн/м²", eos:false, ll:null, src:"https://dom.ria.com/uk/zastroishchik-rodolit-grup-5240755/chernovtsy/"},
+    {n:"ЖК Онікс", a:"вул. Залозецького, 40", st:"будується", p:"53 300–56 000 грн/м²", eos:false, ll:[48.2935,25.9605], src:"https://novobudovy.com/kompanii-chernivtsiv/rodolit"},
+    {n:"ЖК Sapfire Towers", a:"Чернівці", st:"будується", p:"58 240–58 305 грн/м²", eos:false, ll:null, src:"https://dom.ria.com/uk/zastroishchik-rodolit-grup-5240755/chernovtsy/"},
+    {n:"ЖК Зелені Пагорби", a:"пров. Смотрицький, 14 / вул. Таджицька, 14 (джерела розходяться)", st:"завершено", p:"від 42 560 грн/м²", eos:true, ll:[48.3045,25.9290], src:"https://dom.ria.com/uk/novostroyka-zhk-zeleni-pagorby-7385/"},
+    {n:"ЖБК Перспектива", a:"вул. Рівненська, 12б", st:"здано / продається", p:"дані різняться", eos:false, ll:[48.3135,25.9585], src:"https://vn.com.ua/ua/complex/zhsk-perspektiva"}
+  ],
+  eosNote:"Компанія сама розповідала про продаж за єОселею. ЛУН відносить її до забудовників з єОселею.",
+  eosSrc:"https://molbuk.ua/news/302872-kvartyry-pid-3-detalno-pro-programu-ieoselia-u-chernivciakh-rozpoviv-krashchyi-zabudovnyk-za-versiieu-konkursu-narodnyi-brend-bk-rodolit.html",
+  reviews:[
+    {tone:"rating", type:"рейтинг", t:"Рейтинг 4,9 з 5 на основі 37 відгуків, частка негативних оцінок нульова.", src:"TOP20", url:"https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/rodolit-stroitelnaya-kompaniya.html"},
+    {tone:"rating", type:"рейтинг", t:"Репутація 4,7 з 5 на основі 45 думок користувачів.", src:"NOVOBUDOVY.com", url:"https://novobudovy.com/kompanii-chernivtsiv/rodolit"},
+    {tone:"rating", type:"рейтинг", t:"Рейтинг забудовника 94%. «У забудовника відсутні проблемні об'єкти».", src:"DIM.RIA", url:"https://dom.ria.com/uk/zastroishchik-rodolit-grup-5240755/"},
+    {tone:"mix", type:"переказ", t:"Про ЖК «Зелені Пагорби»: плюс у тому, що комплекс у зоні рекреації (лісопарк, поруч річка Прут), мінус у довготривалому будівництві.", src:"ЛУН, оголошення/відгук", url:"https://lun.ua/uk/%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B6-%D0%BA%D0%B2%D0%B0%D1%80%D1%82%D0%B8%D1%80-%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B8%D1%86%D1%8C%D0%BA%D0%B8%D0%B9-%D0%BF%D1%80%D0%BE%D0%B2-%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96"}
+  ]
+},
+{
+  id:"intergal", name:"Інтергал-Буд", since:"2003 (Львів)", hq:"Львів; у Чернівцях відділ продажу ЖК «Київський»", risk:"ok",
+  site:"https://intergal-bud.com.ua/",
+  summary:"Великий національний забудовник із Львова. У Чернівцях зводить один масштабний квартал «Київський» на 13 будинків із власним ТЦ. Квартири з індивідуальним газовим опаленням. Об'єкт акредитовано під єОселю.",
+  ratings:[["DIM.RIA (ЖК Київський)","9,3 з 10 (21 відгук)"]],
+  history:[
+    ["2003","Компанію засновано у Львові.","https://intergal-bud.com.ua/en/news/intergal-bud-u-lvovi--yak-pracyuie-odin-iz-lideriv-rinku-neruhomosti-u-regioni"],
+    ["2013","Премія IBUILD Ukraine «Краща регіональна компанія».","https://intergal-bud.com.ua/en/news/intergal-bud-u-lvovi--yak-pracyuie-odin-iz-lideriv-rinku-neruhomosti-u-regioni"],
+    ["2017–2026","Будує ЖК «Київський». За даними Korter, 8 будинків здано, ще 1 будується зі здачею у 2 кв. 2027. Flatfy рахує 16 зданих секцій.","https://korter.ua/uk/%D0%B6%D0%BA-%D0%BA%D0%B8%D1%97%D0%B2%D1%81%D1%8C%D0%BA%D0%B8%D0%B9-%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96"],
+    ["2022–2025","За даними ЛУН (з опису забудовника), лідер ринку за кількістю зданих будинків в Україні.","https://lun.ua/uk/%D1%96%D0%BD%D1%82%D0%B5%D1%80%D0%B3%D0%B0%D0%BB-%D0%B1%D1%83%D0%B4/%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96"]
+  ],
+  projects:[
+    {n:"ЖК Київський", a:"вул. Київська, 16 / вул. Григорія Мізюна, 20", st:"8 будинків здано, 1 будується (2 кв. 2027)", p:"від $1 130/м² (DIM.RIA); від 48 850 грн/м² (Korter)", eos:true, ll:[48.2745,25.9625], src:"https://dom.ria.com/uk/novostroyka-zhk-kyivskyi-6858/"},
+    {n:"ЖК Polar Park", a:"Чернівці (є в каталозі DIM.RIA)", st:"уточнюйте", p:"н/д", eos:false, ll:null, src:"https://dom.ria.com/uk/zastroishchik-intergal-bud-2161439/"}
+  ],
+  eosNote:"DIM.RIA позначає ЖК Київський як акредитований. Svitbudov також вносить його до переліку єОселі.",
+  eosSrc:"https://dom.ria.com/uk/novostroyki/chernovtsy-yeoselia/",
+  reviews:[
+    {tone:"pos", type:"переказ", t:"Загальна оцінка покупців 9,3 з 10. Хвалять закриту територію та співвідношення ціни і якості.", src:"DIM.RIA, відгуки ЖК Київський", url:"https://dom.ria.com/uk/novostroyka-zhk-kyivskyi-6858/feedback-page/"},
+    {tone:"neg", type:"цитата", t:"Нема вуличного освітлення.", src:"DIM.RIA, відгуки ЖК Київський", url:"https://dom.ria.com/uk/novostroyka-zhk-kyivskyi-6858/feedback-page/"},
+    {tone:"pos", type:"цитата", t:"ціна\\якість відповідають", src:"vn.com.ua, ЖК Київський", url:"https://vn.com.ua/ua/complex/zhk-po-ul-mizjuna-20"},
+    {tone:"pos", type:"переказ", t:"Покупець називає комплекс відмінним завдяки власному опаленню в квартирі.", src:"vn.com.ua, ЖК Київський", url:"https://vn.com.ua/ua/complex/zhk-po-ul-mizjuna-20"},
+    {tone:"neg", type:"переказ", t:"Мешканець скаржиться на стрибки напруги в мережі і радить одразу купити стабілізатор.", src:"ukrblog.info", url:"https://ukrblog.info/service/intergal-bud/"}
+  ]
+},
+{
+  id:"monolit", name:"Чернівці Моноліт", since:"2016", hq:"Чернівці", risk:"ok",
+  summary:"Регіональний забудовник одного великого проєкту, ЖК «Кришталеве озеро» (14 секцій у 2 будинках, 10 поверхів, монолітний каркас). Секції здавали з 2018 по 2022 рік, друга черга в роботі. Є таунхауси під тією ж назвою. Акредитований під єОселю.",
+  ratings:[["DIM.RIA (ЖК)","9,38 з 10"],["ostroyke.com.ua","3 з 5 (1 оцінка)"]],
+  history:[
+    ["2016","Старт проєкту «Кришталеве озеро».","https://vn.com.ua/ua/complex/zhk-krishtaleve-ozero"],
+    ["2018","Введено в експлуатацію секцію 1.","https://vn.com.ua/ua/complex/zhk-krishtaleve-ozero/construction"],
+    ["2018–2022","Поетапно здано секції першого будинку, останню у 2022.","https://vn.com.ua/ua/complex/zhk-krishtaleve-ozero/construction"],
+    ["2026–2027","Друга черга будується. Джерела називають різні дати здачі: 2026 або 2027.","https://novobudovy.com/novobudovy-chernivtsiv/krishtaleve-ozero-chernivci"]
+  ],
+  projects:[
+    {n:"ЖК Кришталеве озеро", a:"вул. Винниченка, 12", st:"частково здано, 2-га черга будується (2026–2027)", p:"$800–1 200/м² (за різними сайтами); 30 450 грн/м² на Korter (поч. 2025)", eos:true, ll:[48.2815,25.9660], src:"https://dom.ria.com/uk/novostroyka-zhk-kryshtaleve-ozero-4962/"},
+    {n:"Таунхауси «Кришталеве озеро»", a:"поруч із ЖК", st:"уточнюйте", p:"н/д", eos:false, ll:null, src:"https://vsekottedzhi.com.ua/ua/complex/taunhausy-krishtaleve-ozero"}
+  ],
+  eosNote:"Svitbudov вносить ЖК до переліку новобудов з єОселею. На DIM.RIA є позначка про єОселю для готового житла.",
+  eosSrc:"https://svitbudov.com/novobudovy-yeoselia/chernivtsi/",
+  reviews:[
+    {tone:"neg", type:"цитата", t:"Не получили ответы на вопросы, потому что то сайт не работает, то у них на сайте нет информации о ходе строительства.", src:"DIM.RIA, відгуки ЖК Кришталеве озеро (2020–2021)", url:"https://dom.ria.com/uk/novostroyka-zhk-kryshtaleve-ozero-4962/feedback-page/"},
+    {tone:"pos", type:"переказ", t:"Хвалять район, планування, інфраструктуру та якість будівництва. Середня оцінка близько 9,4 з 10.", src:"DIM.RIA, відгуки ЖК Кришталеве озеро", url:"https://dom.ria.com/uk/novostroyka-zhk-kryshtaleve-ozero-4962/feedback-page/"},
+    {tone:"neg", type:"переказ", t:"Відділ продажів не передзвонював на залишені запити.", src:"DIM.RIA, відгуки ЖК Кришталеве озеро", url:"https://dom.ria.com/uk/novostroyka-zhk-kryshtaleve-ozero-4962/feedback-page/"},
+    {tone:"rating", type:"рейтинг", t:"Одна оцінка 3 з 5, без текстового відгуку.", src:"ostroyke.com.ua", url:"https://ostroyke.com.ua/novobudovy/zhk-krishtaleve-ozero"},
+    {tone:"mix", type:"обговорення", t:"Окрема гілка обговорення ЖК на форумі Domik (вул. Винниченка).", src:"forum.domik.ua", url:"https://forum.domik.ua/uk/zhk-krishtaleve-ozero-chernvc-vul-vinnichenka-t30050.html"}
+  ]
+},
+{
+  id:"vbud", name:"V-Bud", since:"н/д", hq:"Чернівці, тел. відділу продажу +38 (0372) 50-01-60", risk:"info",
+  summary:"Забудовник ЖК VIVA-Chernivtsi та однойменного котеджного містечка на Шишківській. Ціни прив'язані до долара. ЖК акредитований під єОселю. Про історію компанії у відкритих джерелах майже нічого немає.",
+  ratings:[["DIM.RIA (ЖК)","4 відгуки"]],
+  history:[
+    ["2026","ЖК Viva-Chernivtsi: здача 3-ї секції заявлена на 3 кв. 2026 (DIM.RIA, ціни оновлено 20.08.2026).","https://dom.ria.com/uk/novostroyka-zhk-viva-chernivtsi-8720/"]
+  ],
+  projects:[
+    {n:"ЖК VIVA-Chernivtsi", a:"вул. Шишківська, 12 (Korter: Шишківська, 2)", st:"будується, здача 3 кв. 2026", p:"53 800–57 750 грн/м²; квартири від 3,08–3,43 млн грн", eos:true, ll:[48.3020,25.9010], src:"https://dom.ria.com/uk/novostroyka-zhk-viva-chernivtsi-8720/"},
+    {n:"КМ VIVA-Chernivtsi (таунхауси)", a:"вул. Шишківська, 6–10", st:"будується", p:"від 2,46 млн грн (дані різняться, до 4,7 млн)", eos:false, ll:[48.3010,25.8990], src:"https://dom.ria.com/uk/novostroyka-km-viva-chernivtsi-9874/"}
+  ],
+  eosNote:"DIM.RIA позначає ЖК Viva-Chernivtsi як акредитований по єОселі.",
+  eosSrc:"https://dom.ria.com/uk/novostroyki/chernovtsy-yeoselia/",
+  reviews:[
+    {tone:"rating", type:"рейтинг", t:"На сторінці ЖК 4 відгуки. Рейтинг Шевченківського району 5,5 з 10.", src:"DIM.RIA", url:"https://dom.ria.com/uk/novostroyka-zhk-viva-chernivtsi-8720/"},
+    {tone:"rating", type:"рейтинг", t:"Таунхаус VIVA: оцінка на основі 1 думки.", src:"NOVOBUDOVY.com", url:"https://novobudovy.com/kotedzhni-mistechka-chernivtsiv/taunhaus-viva"}
+  ]
+},
+{
+  id:"kromax", name:"KromaxBud (Кромаксбуд)", since:"≈2018 (7–8 років на ринку)", hq:"вул. Руська, 219є; тел. +380 98 918 90 50", risk:"ok",
+  summary:"Забудовник із власною виробничою базою: покрівельні матеріали KROMAX, металобаза «Д-Мітал», бетонний вузол «Кубометр». Будує бізнес-клас на Руській, новий ЖК на проспекті Незалежності та малоповерховий «Парковий дім» (акредитований під єОселю).",
+  ratings:[["TOP20","4,7 з 5 (10 відгуків)"],["vn.com.ua","5,0 (2 відгуки, 2021)"],["DIM.RIA","9 відгуків"]],
+  history:[
+    ["≈2018","Початок роботи в Чернівцях. DIM.RIA вказує 7–8 років на ринку.","https://dom.ria.com/uk/realtor-7826177.html"],
+    ["2022","Перший будинок ЖК KromaxBud на Руській (здача 4 кв. 2022).","https://ostroyke.com.ua/novobudovy/zhk-kromaxbud"],
+    ["4 кв. 2025","Введено в експлуатацію 2-й будинок ЖК KromaxBud.","https://vn.com.ua/ua/complex/zhk-kromaxbud"],
+    ["2026–2028","Будуються 3-й будинок (здача 4 кв. 2027 або 4 кв. 2028), ЖК «Новий Проспект» (2 кв. 2026) і «Парковий дім».","https://dom.ria.com/uk/novostroyka-zhk-kromaxbud-6318/"]
+  ],
+  projects:[
+    {n:"ЖК KromaxBud", a:"вул. Руська, 211 / 213б (джерела розходяться)", st:"2 будинки здано, 3-й будується", p:"$1 100–1 300/м² (жовтень 2026)", eos:false, ll:[48.2868,25.9775], src:"https://dom.ria.com/uk/novostroyka-zhk-kromaxbud-6318/"},
+    {n:"ЖК Новий Проспект", a:"просп. Незалежності, 137А", st:"будується, здача 2 кв. 2026", p:"н/д", eos:false, ll:[48.2600,25.9585], src:"https://dom.ria.com/uk/novostroyka-zhk-novyi-prospekt-7876/"},
+    {n:"ЖК Парковий дім", a:"вул. Авіаційна, 2Г (р-н вул. Головної)", st:"будується", p:"н/д (елітна малоповерхівка)", eos:true, ll:[48.2575,25.9330], src:"https://flatfy.ua/uk/жк-парковий-дім-чернівці"}
+  ],
+  eosNote:"DIM.RIA позначає ЖК Парковий дім як акредитований по єОселі.",
+  eosSrc:"https://dom.ria.com/uk/novostroyki/chernovtsy-yeoselia/",
+  reviews:[
+    {tone:"rating", type:"рейтинг", t:"4,7 з 5 на основі 10 відгуків.", src:"TOP20", url:"https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/"},
+    {tone:"rating", type:"рейтинг", t:"2 відгуки з оцінкою 5,0, найновіший за 2021 рік.", src:"vn.com.ua", url:"https://vn.com.ua/ua/complex/zhk-kromaxbud"},
+    {tone:"rating", type:"рейтинг", t:"Репутація забудовника на основі 29 думок.", src:"NOVOBUDOVY.com", url:"https://novobudovy.com/kompanii-chernivtsiv/kromaxbud"}
+  ]
+},
+{
+  id:"vodogray", name:"БК Водограй", since:"≈2015 (ЄДРПОУ 39714715)", hq:"Чернівці; сайт vodogray.ua", risk:"warn",
+  summary:"Один із найактивніших місцевих забудовників: ЖК Водограй, Vodogray UN1T, Compass (за оголошеннями). У відгуках хвалять інфраструктуру й охорону, мінус у затримці введення в експлуатацію окремих секцій. У реєстрі судових рішень компанія згадується в трьох документах кримінальних проваджень 2019 року. Їхній зміст у відкритих результатах не розкрито.",
+  ratings:[["TOP20","4,5 з 5 (14 відгуків)"],["NOVOBUDOVY (ЖК Водограй)","4,3 з 5 (4)"],["NOVOBUDOVY (UN1T)","3,5 з 5 (14)"],["DIM.RIA (Compass)","6,67 з 10"]],
+  history:[
+    ["2016–2023","ЖК Водограй на Воробкевича. Секції здавали поетапно, DIM.RIA вказує здачу в 1 кв. 2023. На Kvartirale «всі квартири продані».","https://dom.ria.com/uk/novostroyka-zhk-vodograi-5727/"],
+    ["2019","Компанія згадується в трьох документах кримінальних проваджень (Єдиний реєстр судових рішень).","https://opendatabot.ua/c/39714715"],
+    ["2023–2027","Будує ЖК Vodogray UN1T на бульварі Буковинського віча, здача 2027. DIM.RIA вказує забудовником «Сузір'я».","https://dom.ria.com/uk/novostroyka-zhk-vodogray-un1t-8302/"],
+    ["2026","ОСББ «ЖК Водограй» є стороною цивільної справи (ухвала від 28.05.2026).","https://youcontrol.com.ua/catalog/company_details/42891503/"]
+  ],
+  projects:[
+    {n:"ЖК Водограй", a:"вул. Сидора Воробкевича, 33", st:"здано, квартири від забудовника розпродано", p:"вторинка; агрегатори: 27 300–44 800 грн/м² (застаріло)", eos:false, ll:[48.2965,25.9300], src:"https://dom.ria.com/uk/novostroyka-zhk-vodograi-5727/"},
+    {n:"ЖК Vodogray UN1T", a:"бул. Буковинського віча, 4", st:"будується, здача 2027", p:"від 62 720 грн/м²", eos:false, ll:[48.2635,25.9545], src:"https://novobudovy.com/novobudovy-chernivtsiv/vodograj-un1t"},
+    {n:"ЖК Compass", a:"вул. Буковинська, 62-А", st:"7 будинків здано, 7 будуються (ЛУН)", p:"вторинка, напр. 3-кімн. ≈12,6 млн грн (OLX, 2026)", eos:false, ll:[48.2960,25.9060], src:"https://lun.ua/new/chernivtsi/compass"}
+  ],
+  reviews:[
+    {tone:"mix", type:"переказ", t:"Плюси: розвинена інфраструктура поруч, фонтан на території, охорона, відеонагляд. Мінус: затримка введення в експлуатацію деяких секцій.", src:"Bild.ua, відгуки ЖК Водограй", url:"https://bild.ua/uk/zhk-vodogray-chernivci/vidguki"},
+    {tone:"mix", type:"переказ", t:"Оцінка ЖК Compass 6,67 з 10, найнижча серед переглянутих. Покупцю частина відповідей відділу продажу залишилася незрозумілою.", src:"DIM.RIA, відгуки ЖК Compass", url:"https://dom.ria.com/uk/novostroyka-zhk-compass-7703/feedback-page/"},
+    {tone:"rating", type:"рейтинг", t:"Vodogray UN1T: 3,5 з 5 на основі 14 думок. ЖК Водограй: 4,3 з 5 на основі 4 думок.", src:"NOVOBUDOVY.com", url:"https://novobudovy.com/novobudovy-chernivtsiv/vodograj-un1t"},
+    {tone:"rating", type:"рейтинг", t:"4,5 з 5 на основі 14 відгуків.", src:"TOP20", url:"https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/"},
+    {tone:"pos", type:"реклама", t:"Позитивний матеріал із коментарями мешканця й представника ЖК. Позначено «на правах реклами», тому це не незалежний відгук.", src:"Молодий буковинець", url:"https://molbuk.ua/news/98347-zhytlo-yevropeyskogo-rivnya-u-chernivcyakh-na-pravakh-reklamy.html"}
+  ]
+},
+{
+  id:"suziria", name:"Сузір'я", since:"н/д", hq:"Чернівці", risk:"info",
+  summary:"На DIM.RIA має рейтинг 100% (продано 4 з 5 об'єктів) і вказаний забудовником ЖК Vodogray UN1T. Імовірно, це юрособа-партнер або бренд у зв'язці з БК Водограй. Окремої інформації про компанію немає. Не плутати з однойменним забудовником з Кропивницького.",
+  ratings:[["DIM.RIA","100% (продано 4 з 5)"]],
+  history:[["2027","Заявлена здача ЖК Vodogray UN1T, де DIM.RIA вказує «Сузір'я» забудовником.","https://dom.ria.com/uk/novostroyka-zhk-vodogray-un1t-8302/"]],
+  projects:[],
+  reviews:[]
+},
+{
+  id:"parus", name:"Parus Group (Парус Груп)", since:"2010", hq:"вул. Головна, 69", risk:"warn",
+  site:"https://parusgroup.com.ua/",
+  summary:"Працює з 2010 року. Проєкти: Панорама, Фордевінд, Неосіті, Панський острів. Рейтинг на NOVOBUDOVY нижче середнього (3,1 з 5), у ЖК Панорама 2,7. Строки здачі Панорами (2025) у джерелах уже минули. ЖК Панорама акредитований під єОселю.",
+  ratings:[["DIM.RIA","100% (продано 2 з 4)"],["NOVOBUDOVY","3,1 з 5 (39 думок)"],["NOVOBUDOVY (Панорама)","2,7 з 5 (18)"]],
+  history:[
+    ["2010","Заснування компанії, офіс на Головній, 69.","https://novobudovy.com/kompanii-chernivtsiv/parus-group"],
+    ["до 2022","Завершено ЖК Неосіті (2022 рік будівництва за ЛУН) і ЖК Фордевінд (квартири розпродано).","https://lun.ua/uk/%D0%B6%D0%BA-%D0%BD%D0%B5%D0%BE%D1%81%D1%96%D1%82%D1%96-%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96"],
+    ["2025","Заявлена здача ЖК Панорама: 1 або 4 кв. 2025, залежно від джерела.","https://vn.com.ua/ua/complex/zhk-panorama-chernovtsy"]
+  ],
+  projects:[
+    {n:"ЖК Панорама", a:"вул. Руська, 238", st:"будується / здача заявлялась на 2025", p:"26 800–35 741 грн/м²", eos:true, ll:[48.2850,25.9920], src:"https://dom.ria.com/uk/novostroyka-zhk-panorama-8897/"},
+    {n:"ЖК Фордевінд", a:"вул. Кузьми Мініна, 13а", st:"продано", p:"від 49 456 грн/м² (архів)", eos:false, ll:[48.2895,25.9565], src:"https://ua.kvartirale.com/ua/d/1720/parus-group-ua/"},
+    {n:"ЖК Неосіті", a:"Чернівці (відділ продажу: Головна, 69)", st:"здано 2022", p:"від $1 322 / 60 283 грн/м²", eos:false, ll:null, src:"https://dom.ria.com/uk/zastroishchik-parus-group-5240915/"},
+    {n:"ЖК Панський острів", a:"вул. Садгірська, 3ж", st:"уточнюйте", p:"н/д", eos:false, ll:[48.3150,25.9520], src:"https://vn.com.ua/ua/complex/zhk-panskij-ostriv"}
+  ],
+  eosNote:"DIM.RIA позначає ЖК Панорама як акредитований по єОселі.",
+  eosSrc:"https://dom.ria.com/uk/novostroyki/chernovtsy-yeoselia/",
+  reviews:[
+    {tone:"rating", type:"рейтинг", t:"Рейтинг забудовника 3,1 з 5 на основі 39 думок. ЖК Панорама: 2,7 з 5 на основі 18 думок.", src:"NOVOBUDOVY.com", url:"https://novobudovy.com/kompanii-chernivtsiv/parus-group"},
+    {tone:"neg", type:"цитата", t:"термін здачі переносять з року в рік", src:"TOP20, відгук про забудовника з офісом на Головній, 69 (там офіс Parus Group; прямо компанію у фрагменті не названо)", url:"https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/"}
+  ]
+},
+{
+  id:"vdgroup", name:"VD Group", since:"2017 (житло), у Чернівцях з 2024", hq:"відділ продажу: вул. Героїв Майдану, 43г", risk:"info",
+  site:"https://vd-group.com.ua/",
+  summary:"Західноукраїнський девелопер (Франківськ, Львів, Коломия, Буковель). У Чернівцях з 2024 року: преміальний Skyline з басейнами на дахах і анонсований у 2026 році квартал Grand Residence на 12+ га. Розтермінування до 29 місяців. Відгуків про чернівецькі об'єкти поки немає, бо здач ще не було.",
+  ratings:[["DIM.RIA","9 об'єктів у Чернівцях: 5 будуються, 3 продано"]],
+  history:[
+    ["2017","Початок житлового напрямку (за сайтом компанії понад 19 років у будівництві).","https://greenside-vdgroup.com.ua/about-developer/"],
+    ["2024","Вихід у Чернівці з ЖК Skyline.","https://greenside-vdgroup.com.ua/about-developer/"],
+    ["лют. 2026","Анонс Grand Residence Chernivtsi: понад 12 га між Руською, Південнокільцевою та Комунальників, з садочком і приватною школою.","https://promin.cv.ua/2026/02/23/vd-group-anonsuie-naibilshyi-zhytlovyi-proiekt-u-chernivtsiakh-ponad-12-hektariv-u-formati-misto-v-misti.html"]
+  ],
+  projects:[
+    {n:"ЖК Skyline", a:"центр (відділ продажу: Героїв Майдану, 43г)", st:"будується: буд. 1 на 3 кв. 2026, буд. 2 на 1 кв. 2027", p:"69 450–92 950 грн/м²; 1-кімн. від 2,35 млн грн", eos:false, ll:[48.2830,25.9395], src:"https://dom.ria.com/uk/novostroyka-zhk-skyline-11981/"},
+    {n:"Grand Residence Chernivtsi", a:"між вул. Руською, Південнокільцевою та Комунальників", st:"підготовчі роботи", p:"≈52 864 грн/м²", eos:false, ll:[48.2800,26.0050], src:"https://novobudovy.com/novobudovy-chernivtsiv/grand-residence-chernivtsi"}
+  ],
+  reviews:[]
+},
+{
+  id:"cod", name:"City of Dreams (Місто Мрій)", since:"2015", hq:"Чернівці; cityofdreams.ua", risk:"bad",
+  summary:"Група інвестиційних і кооперативних компаній. Здала ЖК «Місто Мрій» і «Щаслива оселя» (зі значним запізненням: план 2017, факт 2019). Будівництво перших двох секцій ЖК «Родинна казка» призупинено, продаж на RIA тимчасово зупинено. Купуючи тут, перевіряйте стан кожної секції.",
+  ratings:[["DIM.RIA (Comfort City)","9,68 з 10 (22 оцінки)"],["DIM.RIA (Родинна казка)","8,1 з 10"]],
+  history:[
+    ["2015","Заснування групи City of Dreams.","https://vn.com.ua/ua/complex/zhk-rodinna-kazka-chernovtsy"],
+    ["2016–2019","ЖК «Щаслива оселя» (Героїв Майдану, 111д): здача планувалась на 2 кв. 2017, здано у 2019.","http://forum.domik.ua/zhk-shhasliva-oselya-chernvc-vul-gerov-majdanu-111d-t28869.html"],
+    ["до 2022","ЖК «Місто Мрій» (Чкалова, 13) здано, квартири розпродано.","https://dom.ria.com/uk/novostroyka-zhk-misto-mrii-4632/"],
+    ["2023–2026","ЖК «Родинна казка»: секції 1–2 призупинено, 3–7 у проєкті. Забудовник заявляє пріоритетом зобов'язання перед інвесторами.","https://vn.com.ua/ua/complex/zhk-rodinna-kazka-chernovtsy"]
+  ],
+  projects:[
+    {n:"ЖК Місто Мрій", a:"вул. Чкалова, 13", st:"здано, розпродано", p:"вторинка ≈ €925/м²", eos:false, ll:[48.2715,25.9485], src:"https://dom.ria.com/uk/novostroyka-zhk-misto-mrii-4632/"},
+    {n:"ЖК Щаслива оселя", a:"вул. Героїв Майдану, 111д", st:"здано 2019", p:"вторинка", eos:false, ll:[48.2690,25.9430], src:"https://lun.ua/sale/chernivtsi/shchaslyva-oselia"},
+    {n:"ЖК Родинна казка", a:"пров. Смотрицький, 4", st:"секції 1–2 призупинено", p:"від 22 000 грн/м² (продаж зупинено)", eos:false, ll:[48.3055,25.9320], src:"https://dom.ria.com/uk/novostroyka-zhk-rodynna-kazka-6366/"},
+    {n:"ЖК Comfort City", a:"вул. Руська, 219г", st:"1 будинок", p:"від 30 000 грн/м²", eos:false, ll:[48.2862,25.9830], src:"https://korter.ua/uk/%D0%B6%D0%BA-comfort-city-%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96"}
+  ],
+  reviews:[
+    {tone:"pos", type:"цитата", t:"Нам понравився район в першую очередь", src:"DIM.RIA, відгуки ЖК Comfort City (9,68 з 10)", url:"https://dom.ria.com/uk/novostroyka-zhk-comfort-city-6589/feedback-page/"},
+    {tone:"mix", type:"переказ", t:"Оцінка 8,1 з 10. Хвалять район, ціну, забудовника та індивідуальне опалення, один покупець критикує роботу менеджера.", src:"DIM.RIA, відгуки ЖК Родинна казка", url:"https://dom.ria.com/uk/novostroyka-zhk-rodynna-kazka-6366/feedback-page/"},
+    {tone:"neg", type:"переказ", t:"Будівництво перших двох секцій заморожене.", src:"Kvartirale, ЖК Родинна казка", url:"https://ua.kvartirale.com/ua/c/4929/%D0%B6%D0%BA-%D1%80%D0%BE%D0%B4%D0%B8%D0%BD%D0%BD%D0%B0-%D0%BA%D0%B0%D0%B7%D0%BA%D0%B0-%D1%87%D0%B5%D1%80%D0%BD%D0%BE%D0%B2%D1%86%D1%8B-ua/"}
+  ]
+},
+{
+  id:"bkvartal", name:"Буковинський квартал", since:"≈2016 (ЄДРПОУ 40676338)", hq:"Чернівці", risk:"warn",
+  summary:"Забудовник преміального ЖК Senator на Руській. Строк здачі в різних джерелах зсувається з 2026 на 2028–2029 рік. Відгуки змішані: хвалять консультації та підземний паркинг, критикують район, якість і ціни.",
+  ratings:[["DIM.RIA","88%"],["NOVOBUDOVY","3,7 з 5 (15 думок)"],["BildControl","індекс надійності 81 (зі 216)"]],
+  history:[
+    ["2021–2022","Старт продажів ЖК Senator. Ранні відгуки скаржаться на ціни ще на етапі котловану.","https://dom.ria.com/uk/novostroyka-zhk-senator-7362/feedback-page/"],
+    ["2026–2029","3 будинки будуються. Здача заявлена на 4 кв. 2026, на інших сайтах на 4 кв. 2028 чи 4 кв. 2029.","https://novobudovy.com/novobudovy-chernivtsiv/senator"]
+  ],
+  projects:[
+    {n:"ЖК Senator", a:"вул. Руська, 236Б", st:"будується (2026–2029)", p:"від 42 200 грн/м²; розстрочка від забудовника", eos:false, ll:[48.2855,25.9895], src:"https://dom.ria.com/uk/novostroyka-zhk-senator-7362/"}
+  ],
+  reviews:[
+    {tone:"neg", type:"цитата", t:"Район не підходить, якість забудови не сподобалось.", au:"Ніка", src:"DIM.RIA, відгуки ЖК Senator", url:"https://dom.ria.com/uk/novostroyka-zhk-senator-7362/feedback-page/"},
+    {tone:"neg", type:"переказ", t:"Покупець вважає ціни завеликими ще на етапі котловану.", src:"DIM.RIA, відгуки ЖК Senator (2021)", url:"https://dom.ria.com/uk/novostroyka-zhk-senator-7362/feedback-page/"},
+    {tone:"pos", type:"переказ", t:"Хвалять консультації менеджера, інфраструктуру і краєвиди.", src:"DIM.RIA, відгуки ЖК Senator", url:"https://dom.ria.com/uk/novostroyka-zhk-senator-7362/feedback-page/"},
+    {tone:"mix", type:"переказ", t:"Плюс: підземний паркінг з ліфтом. Мінус: слабка інфраструктура поблизу.", src:"Bild.ua, ЖК Senator", url:"https://bild.ua/uk/zhk-senator-chernivci/vidguki"},
+    {tone:"rating", type:"рейтинг", t:"3,7 з 5 на основі 15 думок.", src:"NOVOBUDOVY.com", url:"https://novobudovy.com/novobudovy-chernivtsiv/senator"},
+    {tone:"rating", type:"рейтинг", t:"Індекс надійності новобудови: 81 зі 216.", src:"BildControl.ua", url:"https://bildcontrol.ua/uk/zhk-senator-chernivci"}
+  ]
+},
+{
+  id:"budcity", name:"Буд сіті (Bud City)", since:"н/д", hq:"Чернівці", risk:"warn",
+  summary:"Забудовник ЖК «Буковинський» на Володимира Великого (Герцена), 91. Мешканці скаржаться, що будинок роками не вводять в експлуатацію, а також на роботу ОСББ і відсутність дитячого майданчика. За тією ж адресою Rieltor продає квартири з відступленням права вимоги від забудовника «Роднічок» зі здачею у 2027 році. Хто є юридичним забудовником, перевіряйте в реєстрі.",
+  ratings:[["NOVOBUDOVY","3,9 з 5 (9 думок)"]],
+  history:[
+    ["≈2021–2026","ЖК Буковинський. За відгуком, будинок не здають уже четвертий рік. Здача заявлена на 4 кв. 2026.","https://bild.ua/uk/zhk-bukovinskiy-chernivci/vidguki"]
+  ],
+  projects:[
+    {n:"ЖК Буковинський", a:"вул. Володимира Великого (Герцена), 91", st:"будується, здача 4 кв. 2026", p:"н/д", eos:false, ll:[48.3005,25.9230], src:"https://dom.ria.com/uk/novostroyka-zhk-bukovynskyi-5962/"}
+  ],
+  reviews:[
+    {tone:"neg", type:"цитата", t:"будинок не здає в експлуатацію вже четвертий рік, будує далі", src:"Bild.ua, відгуки ЖК Буковинський", url:"https://bild.ua/uk/zhk-bukovinskiy-chernivci/vidguki"},
+    {tone:"neg", type:"переказ", t:"Скарги на керівництво ОСББ і на відсутність нормального дитячого майданчика. Автор радить до покупки поставити забудовнику всі питання.", src:"Bild.ua, відгуки ЖК Буковинський", url:"https://bild.ua/uk/zhk-bukovinskiy-chernivci/vidguki"},
+    {tone:"rating", type:"рейтинг", t:"3,9 з 5 на основі 9 думок.", src:"NOVOBUDOVY.com", url:"https://novobudovy.com/novobudovy-chernivtsiv/novobudova-m-chernivci-vul-bukovinska"},
+    {tone:"mix", type:"обговорення", t:"Гілка обговорення ЖК на форумі Domik.", src:"forum.domik.ua", url:"https://forum.domik.ua/uk/zhk-bukovinskij-chernvc-vul-gercena-91-t30223.html"}
+  ]
+},
+{
+  id:"zhytlobud", name:"Чернівціжитлобуд", since:"2001", hq:"Чернівці", risk:"ok",
+  summary:"Один із найстаріших місцевих забудовників. Від 2010 року здав 13 будинків, ще 3 в роботі (ЛУН). DIM.RIA не бачить проблемних об'єктів. Будує невеликими обсягами, по одному-два об'єкти одночасно.",
+  ratings:[["TOP20","5,0 з 5 (5 відгуків)"],["DIM.RIA","4 об'єкти: 1 здано, 3 продано"]],
+  history:[
+    ["2001","Заснування.","https://lun.ua/uk/%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96%D0%B6%D0%B8%D1%82%D0%BB%D0%BE%D0%B1%D1%83%D0%B4"],
+    ["2012–2014","Генпідрядник 5-ї черги житлового кварталу на вул. Будівельників.","https://novobudovy.com/arkhiv/novobudova-m-chernivci-vul-budivelnikiv"],
+    ["2018","Здано ЖК на вул. Юрія Гагаріна, 54а.","https://korter.ua/uk/%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96%D0%B6%D0%B8%D1%82%D0%BB%D0%BE%D0%B1%D1%83%D0%B4"],
+    ["2025","Здано ЖК на вул. Героїв Майдану, 53, усі квартири продано.","https://korter.ua/uk/%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96%D0%B6%D0%B8%D1%82%D0%BB%D0%BE%D0%B1%D1%83%D0%B4"],
+    ["2026","Здано ЖК на вул. Спортивній.","https://korter.ua/uk/%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96%D0%B6%D0%B8%D1%82%D0%BB%D0%BE%D0%B1%D1%83%D0%B4"]
+  ],
+  projects:[
+    {n:"ЖК на Гагаріна, 54а", a:"вул. Юрія Гагаріна, 54а", st:"здано 2018", p:"вторинка", eos:false, ll:[48.2790,25.9720], src:"https://korter.ua/uk/%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96%D0%B6%D0%B8%D1%82%D0%BB%D0%BE%D0%B1%D1%83%D0%B4"},
+    {n:"ЖК на Героїв Майдану, 53", a:"вул. Героїв Майдану, 53", st:"здано 2025", p:"продано", eos:false, ll:[48.2805,25.9395], src:"https://korter.ua/uk/%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96%D0%B6%D0%B8%D1%82%D0%BB%D0%BE%D0%B1%D1%83%D0%B4"},
+    {n:"ЖК на Спортивній", a:"вул. Спортивна", st:"здано 2026", p:"уточнюйте", eos:false, ll:null, src:"https://korter.ua/uk/%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96%D0%B6%D0%B8%D1%82%D0%BB%D0%BE%D0%B1%D1%83%D0%B4"}
+  ],
+  reviews:[
+    {tone:"rating", type:"рейтинг", t:"5,0 з 5 на основі 5 відгуків.", src:"TOP20", url:"https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/chernivtsizhitlobud-budivelna-kompaniya.html"},
+    {tone:"rating", type:"рейтинг", t:"«У забудовника відсутні проблемні об'єкти».", src:"DIM.RIA", url:"https://dom.ria.com/uk/zastroishchik-chernivtsizhytlobud-5241750/"}
+  ]
+},
+{
+  id:"rembud", name:"Рембудсервіс", since:"1993", hq:"вул. Головна, 226а", risk:"warn",
+  summary:"Старе будівельне підприємство (ЄДРПОУ 21428727 / 31887128). Рейтинги нижчі за середні: 3,6 з 5 для компанії і 2,7 з 5 для новобудови на Головній.",
+  ratings:[["NOVOBUDOVY","3,6 з 5 (29 думок)"],["NOVOBUDOVY (Головна)","2,7 з 5 (12)"]],
+  history:[["1993","Заснування.","https://novobudovy.com/kompanii-chernivtsiv/rembudservis"]],
+  projects:[
+    {n:"Новобудова на Головній", a:"вул. Головна", st:"будується / уточнюйте", p:"від 44 100 грн/м² (~$1 000)", eos:false, ll:[48.2640,25.9265], src:"https://novobudovy.com/novobudovy-chernivtsiv/golovna"},
+    {n:"Новобудова на Руській, 233а", a:"вул. Руська, 233а", st:"уточнюйте", p:"н/д", eos:false, ll:[48.2858,25.9870], src:"https://novobudovy.com/novobudovy-chernivtsiv/ruska-233"},
+    {n:"Новобудова на Ковельській", a:"вул. Ковельська", st:"уточнюйте", p:"н/д", eos:false, ll:null, src:"https://novobudovy.com/novobudovy-chernivtsiv/kovelska-5"}
+  ],
+  reviews:[
+    {tone:"rating", type:"рейтинг", t:"3,6 з 5 на основі 29 думок.", src:"NOVOBUDOVY.com", url:"https://novobudovy.com/kompanii-chernivtsiv/rembudservis"},
+    {tone:"neg", type:"рейтинг", t:"Новобудова на Головній: 2,7 з 5 на основі 12 думок.", src:"NOVOBUDOVY.com", url:"https://novobudovy.com/novobudovy-chernivtsiv/golovna"}
+  ]
+},
+{
+  id:"bitidi", name:"Bitidi Group", since:"н/д", hq:"вул. Володимира Великого (Герцена), 2В", risk:"info",
+  summary:"Невеликий забудовник клубних і камерних будинків: ЖК Chicago, Cube House (розпродано). DIM.RIA: продано 2 з 5 об'єктів.",
+  ratings:[["DIM.RIA","продано 2 з 5 об'єктів"]],
+  history:[],
+  projects:[
+    {n:"ЖК Chicago", a:"Чернівці (відділ продажу: Володимира Великого, 2в)", st:"будується", p:"49 550–54 050 грн/м²; від 2,42 млн грн", eos:false, ll:null, src:"https://lun.ua/new/chernivtsi/chicago-news"},
+    {n:"Cube House", a:"Чернівці", st:"розпродано", p:"—", eos:false, ll:null, src:"https://lun.ua/new/chernivtsi/cube-house"}
+  ],
+  reviews:[]
+},
+{
+  id:"avva", name:"AVVA Building Company", since:"н/д", hq:"Чернівці", risk:"info",
+  summary:"Камерні проєкти: клубний дім «Безпечний дім», таунхауси Hygge Life і Family Town. На DIM.RIA продано 2 з 6 об'єктів.",
+  ratings:[["DIM.RIA","продано 2 з 6 об'єктів"]],
+  history:[["2026","Клубний дім «Безпечний дім»: 2 секції, здача 3 кв. 2026 (перевірка DIM.RIA 25.08.2026).","https://dom.ria.com/novostroyka-klubnyi-dom-bezopasnyi-dom-7498/"]],
+  projects:[
+    {n:"Клубний дім «Безпечний дім»", a:"вул. Шухевича, 36", st:"будується, здача 3 кв. 2026", p:"н/д", eos:false, ll:[48.2870,25.9180], src:"https://dom.ria.com/novostroyka-klubnyi-dom-bezopasnyi-dom-7498/"},
+    {n:"Таунхауси Family Town", a:"вул. Ставропольська, 7а (р-н аеропорту)", st:"будується (дані ЛУН від 02.2024)", p:"від $95 000 за 124 м²", eos:false, ll:[48.2620,25.9850], src:"https://lun.ua/uk/%D1%82%D0%B0%D1%83%D0%BD%D1%85%D0%B0%D1%83%D1%81%D0%B8-family-town-%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96"},
+    {n:"Таунхаус Hygge Life", a:"Чернівці", st:"4 таунхауси", p:"н/д", eos:false, ll:null, src:"https://dom.ria.com/uk/novostroyka-taunkhaus-hygge-life-9356/"}
+  ],
+  reviews:[]
+},
+{
+  id:"akvareli", name:"Акварелі Буковини", since:"н/д", hq:"вул. Ковельська, 1", risk:"info",
+  summary:"Проєктує та будує житлову й комерційну нерухомість. Розпродано таунхауси на Рівненській і у Віденському провулку. Будується ЖК на Шишківській: 10 секцій, здача до 2 кв. 2027.",
+  ratings:[["DIM.RIA","продано 3 об'єкти"]],
+  history:[],
+  projects:[
+    {n:"ЖК на Шишківській", a:"вул. Шишківська", st:"будується, 10 секцій до 2 кв. 2027", p:"квартири від $70 000", eos:false, ll:[48.3030,25.9040], src:"https://dom.ria.com/uk/zastroishchiki-chernovtsy/"}
+  ],
+  reviews:[]
+},
+{
+  id:"budtorg", name:"Будторгінвест", since:"понад 25 років на ринку", hq:"Чернівці", risk:"info",
+  summary:"Генпідрядник державних замовлень: будівництво, реконструкція, дороги в Чернівецькій області. Житло будує епізодично.",
+  ratings:[], history:[], projects:[], reviews:[],
+  site:"https://dom.ria.com/uk/zastroishchik-budtorginvest-5239696/"
+},
+{
+  id:"romtim", name:"РомтімБуд", since:"н/д", hq:"Чернівці", risk:"info",
+  summary:"Забудовник ЖК GreenLand на бульварі Буковинського віча (за оголошеннями; написання назви в джерелах різне). Здача наприкінці 2028 року.",
+  ratings:[], history:[],
+  projects:[{n:"ЖК GreenLand", a:"бул. Буковинського віча, 1", st:"будується, здача кінець 2028", p:"напр. 1-кімн. 43 м² за $49 900 (оголошення)", eos:false, ll:[48.2645,25.9525], src:"https://flatfy.ua/uk/жк-greenland-чернівці"}],
+  reviews:[]
+},
+{
+  id:"pmk76", name:"ТДВ «ПМК-76»", since:"радянських часів (ЄДРПОУ 01037595)", hq:"вул. Лесина, 4", risk:"bad",
+  summary:"Старе будівельне товариство з виторгом 70 млн грн за 2025 рік. На TOP20 найгірший рейтинг серед забудовників міста (1,0 з 5). Мешканці пишуть, що будинок, який зводили з 2011 по 2024 рік, досі не введено в експлуатацію. Bild.ua позначає проблему на ЖК на Героїв Майдану, 150.",
+  ratings:[["TOP20","1,0 з 5 (12 відгуків)"]],
+  history:[
+    ["2011–2024","Будівництво будинку, який, за відгуками, так і не здали в експлуатацію. Людей заселили з відключеннями світла.","https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/pmk-76.html"],
+    ["2026","Bild.ua позначає проблемний статус ЖК на вул. Героїв Майдану, 150.","https://bild.ua/uk/budivelni-kompaniyi-chernivciv"]
+  ],
+  projects:[{n:"ЖК на Героїв Майдану, 150", a:"вул. Героїв Майдану, 150", st:"проблемний (Bild.ua)", p:"н/д", eos:false, ll:[48.2640,25.9460], src:"https://bild.ua/uk/budivelni-kompaniyi-chernivciv"}],
+  reviews:[
+    {tone:"neg", type:"цитата", t:"Будинок з 2011 по 2024 рік ніяк не можуть здати в експлуатацію.", src:"TOP20, ПМК-76", url:"https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/pmk-76.html"},
+    {tone:"neg", type:"цитата", t:"Пустили людей жити, світло щомісяця виключають.", src:"TOP20, ПМК-76", url:"https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/pmk-76.html"},
+    {tone:"neg", type:"переказ", t:"Автор пише, що газу й світла немає через борги забудовника, а строки ненадійні.", src:"TOP20, ПМК-76", url:"https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/pmk-76.html"}
+  ]
+},
+{
+  id:"msimperial", name:"МС Імперіал Буд (Львів)", since:"—", hq:"Львів", risk:"bad",
+  summary:"Львівський забудовник ЖК Imperial Park Avenue на Рівненській, 7. У 2016–2018 роках уклав 225 договорів. Із 2018 року будівництво фактично не ведеться. Прокуратура повідомила про підозру: 190 вкладників, збитки 173 млн грн. Інвестори створили ТОВ «Парк Авеню Буд-Інвест», щоб викупити фірму й добудувати самотужки. Той самий бренд «Імперіал Буд» анонсував ЖК Edison на вул. Науки, 6.",
+  ratings:[],
+  history:[
+    ["2016–2018","225 договорів купівлі майбутніх квартир у ЖК Imperial Park Avenue.","https://zaxid.net/lvivskiy_zabudovnik_oshukav_mayzhe_200_investoriv_na_budivnitstvi_zhk_u_chernivtsyah_n1570109"],
+    ["2018","Роботи на майданчику зупинилися.","https://suspilne.media/chernivtsi/380174-sist-rokiv-cekaut-na-kvartiri-so-vidbuvaetsa-z-zk-park-avenu-u-cernivcah/"],
+    ["2022–2023","Повідомлення про підозру (173 млн грн, 190 вкладників). Підозру також отримав бізнес-партнер забудовника. Суд арештував недобудови.","https://suspilne.media/chernivtsi/563505-na-bukovini-povidomili-pidozru-zabudovniku-akij-jmovirno-osukav-investoriv-na-ponad-173-miljoni-griven/"],
+    ["2024","Інвестори хочуть викупити фірму, яку ексвласник продав миколаївській «Ол-Люкс». Міськрада погодила новий договір оренди землі. 7–8 інвесторів через суд отримали право власності.","https://suspilne.media/chernivtsi/756843-vdruge-kupuemo-svoi-kvartiri-osukani-investori-u-cernivcah-hocut-vikupiti-firmu-zabudovnika-sob-dobuduvati-budinki/"]
+  ],
+  projects:[
+    {n:"ЖК Imperial Park Avenue", a:"вул. Рівненська, 7", st:"недобудова, кримінальна справа", p:"—", eos:false, ll:[48.3120,25.9605], src:"https://dom.ria.com/uk/novostroyka-zhk-imperial-park-avenue-5000/"},
+    {n:"ЖК Edison (анонс «Імперіал Буд»)", a:"вул. Науки, 6", st:"уточнюйте", p:"—", eos:false, ll:[48.2725,25.9650], src:"http://forum.domik.ua/zhk-edson-chernivci-vul-nauki-6-imperal-bud-t26944.html"}
+  ],
+  reviews:[
+    {tone:"pos", type:"цитата", t:"Також хотів звернути увагу на двір, майданчик, паркування, чисту вулицю.", src:"forum.domik.ua, ЖК Імперіал Парк Авеню (ранній відгук, до зупинки будівництва)", url:"https://forum.domik.ua/zhk-park-avenyu-chernivci-vul-rivnenska-7-imperial-bud-t28664.html"},
+    {tone:"neg", type:"переказ", t:"Інвестори перекрили дорогу в центрі Чернівців, вимагаючи добудувати ЖК.", src:"0372.ua", url:"https://www.0372.ua/news/3659590/u-centri-cernivciv-obmanuti-investori-perekrili-dorogu-foto"},
+    {tone:"neg", type:"цитата", t:"\"МС Імперіал Буд\" – проблемна компанія, на які накладено багато обтяжень та арештів.", src:"Суспільне Чернівці, слова інвесторів", url:"https://suspilne.media/chernivtsi/756843-vdruge-kupuemo-svoi-kvartiri-osukani-investori-u-cernivcah-hocut-vikupiti-firmu-zabudovnika-sob-dobuduvati-budinki/"}
+  ]
+}
+];
+
+const CASES = [
+  {lvl:"bad", tag:"Кримінальна справа", title:"ЖК Imperial Park Avenue, Рівненська, 7", body:"«МС Імперіал Буд» (Львів) у 2016–2018 роках уклав 225 договорів, а з 2018 року будівництво стоїть. Підозра у шахрайстві: 190 вкладників, 173 млн грн. Інвестори планують викупити фірму та добудувати самі.", links:[
+    ["Суспільне: підозра забудовнику","https://suspilne.media/chernivtsi/563505-na-bukovini-povidomili-pidozru-zabudovniku-akij-jmovirno-osukav-investoriv-na-ponad-173-miljoni-griven/"],
+    ["Суспільне: інвестори хочуть викупити фірму","https://suspilne.media/chernivtsi/756843-vdruge-kupuemo-svoi-kvartiri-osukani-investori-u-cernivcah-hocut-vikupiti-firmu-zabudovnika-sob-dobuduvati-budinki/"],
+    ["Суспільне: новий договір оренди землі","https://suspilne.media/chernivtsi/757775-investori-zk-na-rivnenskij-v-cernivcah-hocut-samostijno-dobuduvati-kompleks-comu-dla-nih-bulo-vazlivim-risenna-sesii/"],
+    ["Суспільне: шість років чекають на квартири","https://suspilne.media/chernivtsi/380174-sist-rokiv-cekaut-na-kvartiri-so-vidbuvaetsa-z-zk-park-avenu-u-cernivcah/"],
+    ["ZAXID.NET","https://zaxid.net/lvivskiy_zabudovnik_oshukav_mayzhe_200_investoriv_na_budivnitstvi_zhk_u_chernivtsyah_n1570109"],
+    ["Varta1: підозра бізнес-партнеру","https://varta1.com.ua/news/ogolosheno-pidozru-u-masshtabniy-aferi-biznes-partneru-lvivskogo-zabudovnika-v-chernivcyah-foto_375975.html"],
+    ["АЗУЗ: судовий хаос","https://azuz.org.ua/press/sudovyj-haos-ta-obdureni-investory-rozkryttya-tayemnyts-budivelnogo-labiryntu-ms-imperial-bud/"],
+    ["0372: інвестори перекрили дорогу","https://www.0372.ua/news/3659590/u-centri-cernivciv-obmanuti-investori-perekrili-dorogu-foto"]]},
+  {lvl:"bad", tag:"Довгобуд", title:"ЖБК «Егоїст-3», вул. Головна", body:"Понад 80 сімей вклалися в будинок, але забудовник зі Львова, за словами інвесторів, виявився шахраєм. Будинок стоїть без даху і руйнується, а ділянку орендує автомаркет, якому у квітні 2025 року продовжили оренду. Мер Роман Клічук у 2024 році визнав, що найближчим часом його не добудують. Bild.ua позначає ЖК Egoist забудовника UDI як заморожений.", links:[
+    ["АСС: ошукані інвестори на сесії міськради","https://acc.cv.ua/news/chernivtsi/na-sesiyu-cherniveckoyi-miskradi-priyshli-oshukani-zabudovnikom-vlasniki-nedobudovanih-kvartir-na-golovniy-120100"],
+    ["Новини Буковини: Клічук про довгобуди","https://cvnews.cv.ua/post/view/1715593664-klichuk-rozpoviv-pro-situaciyu-iz-zakinutimi-dovgobudami-u-chernivcyah/"],
+    ["Медіа-Версії: чернівецькі довгобуди","https://versii.cv.ua/ekonomichni/chernivetski-doooooovgobuuuuuudyyyy-chym-nebezpechni-yak-vid-nyh-ryatuvatysya/52726.html"]]},
+  {lvl:"bad", tag:"Обвинувальний акт, 2026", title:"33 інвестори, понад $2,3 млн (≈100 млн грн)", body:"Директору будівельної компанії інкримінують шахрайство, підроблення документів і крадіжку. Покупцям показували проєкти квартир і таунхаусів у с. Великий Кучурів та будмайданчики. Дозволів і прав на землю не було. Назву фірми в публікаціях не наведено.", links:[
+    ["Чернівецький промінь, 12.03.2026","https://promin.cv.ua/2026/03/12/chernivetskyi-zabudovnyk-oshukav-33-investoriv-na-100-milioniv-hryven.html"],
+    ["Новини Буковини","https://cvnews.cv.ua/post/view/na-bukovyni-sudytymut-zabudovnyka-yakyj-oshukav-investoriv-na-ponad-23-mln-dolariv/"],
+    ["RegioNews","https://regionews.ua/ukr/news/bukovyna/1773376841-33-poterpilih-i-ponad-2-3-mln-zbitkiv-na-bukovini-suditimut-zabudovnika"]]},
+  {lvl:"bad", tag:"Підозра", title:"«Привид таунхаусів»: 13 млн грн", body:"Засновник будівельної компанії імітував будівництво таунхаусів без прав на землю. Покупцям пропонував прості договори без нотаріуса. Суд обрав тримання під вартою із заставою 6 млн грн.", links:[
+    ["ZAXID.NET","https://zaxid.net/zabudovnik_na_bukovini_oshukav_investoriv_na_13_mln_grn_n1620524"],
+    ["0372.ua","https://www.0372.ua/news/4008798/u-cernivcah-zasnovnik-budivelnoi-kompanii-privlasniv-ponad-13-miljoniv-griven-investoriv-foto"],
+    ["49000.com.ua","https://49000.com.ua/zasnovnik-budivelnoi-kompanii-oshuk/"],
+    ["Антикорупційний фронт","https://www.anticor.foundation/novyny/30552/"]]},
+  {lvl:"warn", tag:"Порушення", title:"ЖК «Ріка», вул. Руська, 219е", body:"Будували без затвердженої проєктної документації. Контролюючий орган скасував декларацію про початок робіт і оштрафував забудовника.", links:[["forum.domik.ua","https://forum.domik.ua/zhk-rka-chernvc-vul-ruska-219e-t26847.html"]]},
+  {lvl:"warn", tag:"Заморожено", title:"ЖК «Родинна казка», пров. Смотрицький, 4", body:"City of Dreams: секції 1–2 призупинено, 3–7 у проєкті, продаж на RIA тимчасово зупинено.", links:[["vn.com.ua","https://vn.com.ua/ua/complex/zhk-rodinna-kazka-chernovtsy"],["Kvartirale","https://ua.kvartirale.com/ua/c/4929/%D0%B6%D0%BA-%D1%80%D0%BE%D0%B4%D0%B8%D0%BD%D0%BD%D0%B0-%D0%BA%D0%B0%D0%B7%D0%BA%D0%B0-%D1%87%D0%B5%D1%80%D0%BD%D0%BE%D0%B2%D1%86%D1%8B-ua/"]]},
+  {lvl:"warn", tag:"Не введено в експлуатацію", title:"ПМК-76: будинок 2011–2024", body:"За відгуками на TOP20, будинок, який зводили з 2011 по 2024 рік, не здано, а мешканцям відключають світло. Bild.ua позначає проблему на ЖК на Героїв Майдану, 150.", links:[["TOP20","https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/pmk-76.html"],["Bild.ua","https://bild.ua/uk/budivelni-kompaniyi-chernivciv"]]},
+  {lvl:"warn", tag:"Пайова участь", title:"Прокуратура стягує 2,8 млн грн з забудовника", body:"Забудовник багатоквартирного будинку не сплатив громаді пайову участь. Назву в доступному фрагменті не вказано.", links:[["Новини Буковини","https://cvnews.cv.ua/post/view/prokuratura-cherez-sud-styaguye-z-zabudovnyka-ponad-28-mln-grn-pajovoyi-uchasti-na-koryst-chernivcziv/"]]},
+  {lvl:"info", tag:"Думка користувача", title:"ЖК «Родинний затишок», вул. Рівненська, 10", body:"У 2018 році користувач форуму назвав забудовника «скандально відомим» через його проєкт у Бучі. Це неперевірена думка.", links:[["forum.domik.ua","https://forum.domik.ua/zhk-rodinnij-zatishok-chernvc-vul-rvnenska-10-t26848.html"]]},
+  {lvl:"info", tag:"Містобудування", title:"Новобудова на вул. Шептицького, 7", body:"Урбаністи критикують розбіжність між рендерами і реальністю та масштаб будівлі в історичному середовищі.", links:[["Pragmatika.media","https://pragmatika.media/news/urbanisty-rozkrytykuvaly-zabudovu-v-tsentri-chernivtsiv-cherez-rozbizhnist-mizh-renderamy-ta-realnistiu/"]]}
+];
+
+/* ---------- ДОПОМІЖНЕ ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const RISK = {ok:["ok","Без відомих проблем"], warn:["warn","Змішані відгуки / затримки"], bad:["bad","Проблемні об'єкти"], info:["info","Мало даних"]};
+const riskPill = r => `<span class="pill ${RISK[r][0]}"><i class="dot"></i>${RISK[r][1]}</span>`;
+const hasEos = d => (d.projects||[]).some(p => p.eos);
+const gmaps = a => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Чернівці, " + a);
+const host = u => { try { return new URL(u).hostname.replace(/^www\./,""); } catch(e){ return u; } };
+const store = { get(k){ try{return localStorage.getItem(k);}catch(e){return null;} }, set(k,v){ try{localStorage.setItem(k,v);}catch(e){} } };
+
+/* ---------- ЗВЕДЕННЯ ---------- */
+(function stats(){
+  const projects = DEV.flatMap(d => d.projects);
+  const reviews = DEV.reduce((n,d) => n + d.reviews.length, 0);
+  const eos = projects.filter(p => p.eos).length;
+  const bad = DEV.filter(d => d.risk === "bad").length;
+  $("#stats").innerHTML = [
+    [DEV.length,"забудовників"],[projects.length,"ЖК і об'єктів"],[eos,"ЖК під єОселю"],[reviews,"відгуків і рейтингів із джерелами"],[bad + " + " + CASES.filter(c=>c.lvl==="bad").length,"проблемних забудовників + справ"]
+  ].map(([v,l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+})();
+
+/* ---------- ВКЛАДКИ ---------- */
+const tabs = [...document.querySelectorAll(".tab")];
+function showView(v){
+  tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.view === v));
+  document.querySelectorAll(".view").forEach(s => s.hidden = s.id !== "view-" + v);
+  store.set("che-view", v);
+}
+tabs.forEach(t => t.addEventListener("click", () => showView(t.dataset.view)));
+
+/* ---------- ЗАБУДОВНИКИ ---------- */
+let current = store.get("che-dev") || DEV[0].id;
+function renderList(){
+  const q = $("#q").value.trim().toLowerCase(), r = $("#risk").value, eo = $("#eosOnly").checked;
+  const list = DEV.filter(d => {
+    if (r && d.risk !== r) return false;
+    if (eo && !hasEos(d)) return false;
+    if (!q) return true;
+    const hay = [d.name, d.hq, d.summary, ...d.projects.map(p => p.n + " " + p.a)].join(" ").toLowerCase();
+    return hay.includes(q);
+  });
+  $("#devList").innerHTML = list.length ? list.map(d => `
+    <button class="dev-item" role="listitem" data-id="${d.id}" aria-current="${d.id===current}">
+      <span class="n">${esc(d.name)}</span>
+      <span>${hasEos(d) ? '<span class="pill info">єОселя</span>' : ''}</span>
+      <span class="s">${riskPill(d.risk)} · ${d.projects.length} ЖК · ${d.reviews.length} відгуків</span>
+    </button>`).join("") : `<p class="empty">Нічого не знайдено. Змініть пошук або фільтр.</p>`;
+  $("#devList").querySelectorAll(".dev-item").forEach(b => b.addEventListener("click", () => { current = b.dataset.id; store.set("che-dev", current); renderList(); renderDetail(); if (window.innerWidth < 860) $("#detail").scrollIntoView({behavior:"smooth"}); }));
+}
+function revHTML(r, devName){
+  return `<div class="rev ${r.tone}"><span class="bar"></span><div>
+    <p class="t">${devName ? `<span class="dev">${esc(devName)}:</span> ` : ""}${r.type === "цитата" ? `<q>${esc(r.t)}</q>` : esc(r.t)}</p>
+    <div class="m"><span class="pill neutral">${esc(r.type)}</span>${r.au ? `<span>автор: ${esc(r.au)}</span>` : ""}<span>${esc(r.src)}</span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(host(r.url))} ↗</a></div>
+  </div></div>`;
+}
+function renderDetail(){
+  const d = DEV.find(x => x.id === current) || DEV[0];
+  const proj = d.projects.length ? `<div class="tbl-wrap"><table>
+      <thead><tr><th>ЖК</th><th>Адреса</th><th>Статус</th><th>Ціна</th><th>єОселя</th><th>Карта</th></tr></thead>
+      <tbody>${d.projects.map(p => `<tr>
+        <td><a href="${esc(p.src)}" target="_blank" rel="noopener">${esc(p.n)}</a></td>
+        <td>${esc(p.a)}</td><td>${esc(p.st)}</td><td class="num">${esc(p.p)}</td>
+        <td>${p.eos ? '<span class="pill info">так</span>' : '<span class="pill neutral">не заявлено</span>'}</td>
+        <td><a href="${gmaps(p.a)}" target="_blank" rel="noopener">Google Maps ↗</a></td></tr>`).join("")}</tbody></table></div>`
+    : `<p class="empty">Конкретних ЖК у відкритих джерелах не знайдено.</p>`;
+  const hist = d.history.length ? `<ul class="timeline">${d.history.map(([y,t,u]) => `<li><span class="y">${esc(y)}</span><span>${esc(t)} <a class="src" href="${esc(u)}" target="_blank" rel="noopener">${esc(host(u))} ↗</a></span></li>`).join("")}</ul>`
+    : `<p class="empty">Детальної історії компанії у відкритих джерелах не знайдено.</p>`;
+  $("#detail").innerHTML = `
+    <h2>${esc(d.name)}</h2>
+    <div class="meta">${riskPill(d.risk)}${hasEos(d) ? '<span class="pill info">є ЖК під єОселю</span>' : '<span class="pill neutral">єОселя не заявлена</span>'}</div>
+    <p class="summary">${esc(d.summary)}</p>
+    <dl class="kv">
+      <div><dt>На ринку з</dt><dd>${esc(d.since)}</dd></div>
+      <div><dt>Офіс / контакти</dt><dd>${esc(d.hq)}</dd></div>
+      ${d.ratings.map(([k,v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}
+      ${d.site ? `<div><dt>Сайт / профіль</dt><dd><a href="${esc(d.site)}" target="_blank" rel="noopener">${esc(host(d.site))} ↗</a></dd></div>` : ""}
+    </dl>
+    ${d.eosNote ? `<h3>єОселя</h3><p>${esc(d.eosNote)} <a class="src" href="${esc(d.eosSrc)}" target="_blank" rel="noopener">${esc(host(d.eosSrc))} ↗</a></p>` : ""}
+    <h3>Житлові комплекси та ціни</h3>${proj}
+    <h3>Історія за 10 років</h3>${hist}
+    <h3>Відгуки (${d.reviews.length})</h3>
+    <div class="reviews">${d.reviews.length ? d.reviews.map(r => revHTML(r)).join("") : '<p class="empty">Публічних відгуків про цього забудовника не знайдено.</p>'}</div>
+    <div class="row" style="margin-top:18px"><button class="btn ghost" id="toMap">Показати ЖК на карті</button></div>`;
+  $("#toMap").addEventListener("click", () => { $("#mapDev").value = d.id; drawMap(); showView("map"); });
+}
+["#q","#risk","#eosOnly"].forEach(s => $(s).addEventListener("input", renderList));
+
+/* ---------- КАРТА (схема) ---------- */
+const BOX = {lon0:25.880, lon1:26.030, lat0:48.250, lat1:48.330, W:1000, H:800};
+const P = (lat,lon) => [ (lon-BOX.lon0)/(BOX.lon1-BOX.lon0)*BOX.W, (BOX.lat1-lat)/(BOX.lat1-BOX.lat0)*BOX.H ];
+const COLOR = {ok:"var(--ok)", warn:"var(--warn)", bad:"var(--bad)", info:"var(--info)"};
+DEV.forEach(d => { const o = document.createElement("option"); o.value = d.id; o.textContent = d.name; $("#mapDev").appendChild(o); });
+function line(pts, attrs){ return `<polyline points="${pts.map(([la,lo]) => P(la,lo).join(",")).join(" ")}" fill="none" ${attrs}/>`; }
+function drawMap(){
+  const fd = $("#mapDev").value, fe = $("#mapEos").checked, fa = $("#mapActive").checked;
+  let s = `<rect x="0" y="0" width="1000" height="800" fill="var(--map-bg)"/>`;
+  // головні вулиці (схематично)
+  const roads = [
+    [[48.2915,25.9350],[48.2890,25.9600],[48.2860,25.9850],[48.2840,26.0100]],          // Руська
+    [[48.2915,25.9350],[48.2800,25.9330],[48.2650,25.9280],[48.2520,25.9230]],          // Головна
+    [[48.2900,25.9380],[48.2780,25.9400],[48.2640,25.9460],[48.2550,25.9500]],          // Героїв Майдану
+    [[48.2880,25.9420],[48.2740,25.9500],[48.2600,25.9590],[48.2520,25.9640]],          // просп. Незалежності
+    [[48.2915,25.9350],[48.3000,25.9250],[48.3080,25.9200]],                             // Володимира Великого
+    [[48.2950,25.9450],[48.3080,25.9500],[48.3200,25.9600],[48.3290,25.9700]],          // до Садгори
+    [[48.2830,25.9900],[48.2650,25.9750],[48.2550,25.9600]]                              // Південнокільцева
+  ];
+  s += roads.map(r => line(r, 'stroke="var(--road)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"')).join("");
+  // р. Прут
+  s += line([[48.2980,25.8800],[48.3040,25.9000],[48.3080,25.9200],[48.3075,25.9400],[48.3095,25.9600],[48.3150,25.9800],[48.3180,26.0000],[48.3210,26.0300]], 'stroke="var(--river)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"');
+  const lab = (la,lo,t,sz=15,w=600) => { const [x,y] = P(la,lo); return `<text x="${x}" y="${y}" font-size="${sz}" font-weight="${w}">${t}</text>`; };
+  s += lab(48.3125,25.8900,"р. Прут",16,700) + lab(48.2930,25.9250,"Центр",17,700) + lab(48.3260,25.9520,"Садгора") + lab(48.2560,25.9820,"Аеропорт") + lab(48.2885,25.9950,"вул. Руська",13,500) + lab(48.2560,25.9120,"вул. Головна",13,500) + lab(48.2960,25.8900,"Роша / Шишківська",13,500);
+  // маркери
+  const marks = [];
+  DEV.forEach(d => d.projects.forEach((p,i) => {
+    if (!p.ll) return;
+    if (fd && d.id !== fd) return;
+    if (fe && !p.eos) return;
+    if (fa && !/будується|підготовчі/.test(p.st)) return;
+    marks.push({d,p,key:d.id+"-"+i});
+  }));
+  s += marks.map(({d,p,key}) => { const [x,y] = P(p.ll[0],p.ll[1]); return `<g class="mk" data-k="${key}" tabindex="0" role="button" aria-label="${esc(p.n)}, ${esc(d.name)}">
+      ${p.eos ? `<circle cx="${x}" cy="${y}" r="17" fill="none" style="stroke:var(--info);stroke-width:2;stroke-dasharray:4 3"/>` : ""}
+      <circle cx="${x}" cy="${y}" r="10" fill="${COLOR[d.risk]}"/></g>`; }).join("");
+  s += `<text x="990" y="788" font-size="12" text-anchor="end">Схема без масштабу. Розташування приблизне.</text>`;
+  $("#map").innerHTML = s;
+  $("#map").querySelectorAll(".mk").forEach(g => {
+    const go = () => { $("#map").querySelectorAll(".mk").forEach(m => m.classList.remove("sel")); g.classList.add("sel"); const m = marks.find(x => x.key === g.dataset.k); side(m.d, m.p); };
+    g.addEventListener("click", go); g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  });
+  if (!marks.length) $("#mapSide").innerHTML = `<p class="empty">За цими фільтрами немає ЖК з відомим розташуванням.</p>`;
+}
+function side(d,p){
+  $("#mapSide").innerHTML = `<h4>${esc(p.n)}</h4>
+    <p class="src" style="margin:0 0 8px">${esc(d.name)}</p>
+    <div class="meta">${riskPill(d.risk)}${p.eos ? '<span class="pill info">єОселя</span>' : ""}</div>
+    <dl class="kv" style="grid-template-columns:1fr">
+      <div><dt>Адреса</dt><dd>${esc(p.a)}</dd></div>
+      <div><dt>Статус</dt><dd>${esc(p.st)}</dd></div>
+      <div><dt>Ціна</dt><dd>${esc(p.p)}</dd></div>
+    </dl>
+    <div class="row" style="margin-top:12px">
+      <a class="btn" href="${gmaps(p.a)}" target="_blank" rel="noopener">Google Maps ↗</a>
+      <a class="btn ghost" href="${esc(p.src)}" target="_blank" rel="noopener">Джерело ↗</a>
+      <button class="btn ghost" id="sideDev">Картка забудовника</button>
+    </div>`;
+  $("#sideDev").addEventListener("click", () => { current = d.id; renderList(); renderDetail(); showView("devs"); });
+}
+["#mapDev","#mapEos","#mapActive"].forEach(s => $(s).addEventListener("input", drawMap));
+
+/* ---------- єОСЕЛЯ ---------- */
+(function eos(){
+  const rows = DEV.flatMap(d => d.projects.filter(p => p.eos).map(p => ({d,p})));
+  $("#eosTable").innerHTML = `<thead><tr><th>ЖК</th><th>Забудовник</th><th>Адреса</th><th>Статус</th><th>Ціна</th><th>Підстава</th></tr></thead><tbody>` +
+    rows.map(({d,p}) => `<tr><td>${esc(p.n)}</td><td>${esc(d.name)} ${riskPill(d.risk)}</td><td>${esc(p.a)}</td><td>${esc(p.st)}</td><td class="num">${esc(p.p)}</td><td><a href="${esc(d.eosSrc||p.src)}" target="_blank" rel="noopener">${esc(host(d.eosSrc||p.src))} ↗</a></td></tr>`).join("") +
+    `<tr><td>Будинок на вул. Козачука, 27а</td><td>не встановлено</td><td>вул. Козачука, 27а</td><td>—</td><td class="num">—</td><td><a href="https://svitbudov.com/novobudovy-yeoselia/chernivtsi/" target="_blank" rel="noopener">svitbudov.com ↗</a></td></tr></tbody>`;
+})();
+
+/* ---------- УСІ ВІДГУКИ ---------- */
+function renderAllRevs(){
+  const tone = $("#revTone").value, q = $("#revQ").value.trim().toLowerCase();
+  const all = DEV.flatMap(d => d.reviews.map(r => ({r,d}))).filter(({r,d}) => (!tone || r.tone === tone) && (!q || (r.t+" "+r.src+" "+d.name).toLowerCase().includes(q)));
+  $("#allRevs").innerHTML = all.length ? all.map(({r,d}) => revHTML(r, d.name)).join("") : `<p class="empty">Нічого не знайдено.</p>`;
+}
+["#revTone","#revQ"].forEach(s => $(s).addEventListener("input", renderAllRevs));
+
+/* ---------- СПРАВИ ---------- */
+$("#cases").innerHTML = CASES.map(c => `<div class="case"><span class="pill ${c.lvl}"><i class="dot"></i>${esc(c.tag)}</span><h3>${esc(c.title)}</h3><p>${esc(c.body)}</p><ul>${c.links.map(([t,u]) => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)} ↗</a></li>`).join("")}</ul></div>`).join("");
+
+/* ---------- МЕТОД ---------- */
+$("#method").innerHTML = `
+  <h2>Звідки дані</h2>
+  <p>Агрегатори новобудов: <a href="https://dom.ria.com/uk/zastroishchiki-chernovtsy/" target="_blank" rel="noopener">DIM.RIA</a>, <a href="https://lun.ua/uk/%D0%B7%D0%B0%D0%B1%D1%83%D0%B4%D0%BE%D0%B2%D0%BD%D0%B8%D0%BA%D0%B8-%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96%D0%B2" target="_blank" rel="noopener">ЛУН</a>, <a href="https://korter.ua/%D0%B7%D0%B0%D0%B1%D1%83%D0%B4%D0%BE%D0%B2%D0%BD%D0%B8%D0%BA%D0%B8-%D1%87%D0%B5%D1%80%D0%BD%D1%96%D0%B2%D1%86%D1%96%D0%B2" target="_blank" rel="noopener">Korter</a>, <a href="https://bild.ua/uk/budivelni-kompaniyi-chernivciv" target="_blank" rel="noopener">Bild.ua</a>, <a href="https://novobudovy.com/novobudovy-chernivtsiv" target="_blank" rel="noopener">NOVOBUDOVY.com</a>, <a href="https://vn.com.ua/ua/catalog/chernovetskaya-oblast/chernovtsy" target="_blank" rel="noopener">vn.com.ua</a>. Відгуки: сторінки відгуків DIM.RIA і Bild.ua, <a href="https://top20.ua/cv/budivelni-ta-remontni-roboti/zabudovniki/" target="_blank" rel="noopener">TOP20</a>, <a href="https://forum.domik.ua/novobudovi-chernovtsi-f621.html" target="_blank" rel="noopener">форум Domik</a>. Новини й справи: Суспільне Чернівці, ZAXID.NET, АСС, 0372.ua, Чернівецький промінь, Новини Буковини, Медіа-Версії. Реєстри: Opendatabot, YouControl, UA-Region.</p>
+  <h2>Обмеження</h2>
+  <ul>
+    <li>Сторінки збирались через вебпошук, бо мережа середовища блокувала прямі запити до сайтів. Цитати взято з фрагментів сторінок, які показав пошук. Повні тексти відгуків відкривайте за посиланням.</li>
+    <li>Групи у Facebook, Telegram-канали та Instagram пошуковик не індексує, тому обговорень звідти тут немає. Для них шукайте групи мешканців конкретних ЖК, наприклад «ОСББ [назва ЖК]» або «Нерухомість Чернівці».</li>
+    <li>Ціни на агрегаторах оновлюються нерегулярно, тому для кожного ЖК наведено діапазон. Актуальну ціну дає лише відділ продажу.</li>
+    <li>Рейтинги TOP20, NOVOBUDOVY та DIM.RIA базуються на 1–45 відгуках. Це сигнал, а не статистика.</li>
+    <li>Не всі ЖК вдалося прив'язати до забудовника: «Кемпінг» (вул. Видинівського, 1, 10 з 10 на DIM.RIA), «Престижний 2» (Героїв Майдану, від 67 875 грн/м²), «Зоряний», «Garden Hall», «Кагарлицький».</li>
+  </ul>
+  <h2>Як перевірити забудовника перед покупкою</h2>
+  <ol>
+    <li>Дозвіл на будівництво (не лише повідомлення) в <a href="https://e-construction.gov.ua/" target="_blank" rel="noopener">Єдиній електронній системі у сфері будівництва</a>.</li>
+    <li>Право на землю: власність чи оренда, цільове призначення. Перевіряється в Публічній кадастровій карті та Держреєстрі речових прав.</li>
+    <li>Суди та борги: <a href="https://reyestr.court.gov.ua/" target="_blank" rel="noopener">Єдиний реєстр судових рішень</a>, Opendatabot, YouControl.</li>
+    <li>Тип договору. Уникайте «простих» договорів без нотаріуса, бо саме так працювали шахрайські схеми з таунхаусами.</li>
+    <li>Для єОселі: чи акредитував об'єкт ваш банк.</li>
+    <li>Поговоріть з мешканцями вже зданих будинків цього забудовника та з ОСББ.</li>
+  </ol>`;
+
+/* ---------- СТАРТ ---------- */
+renderList(); renderDetail(); drawMap(); renderAllRevs();
+const v0 = (location.hash||"").slice(1) || store.get("che-view");
+if (["devs","map","eos","revs","cases","method"].includes(v0)) showView(v0);
+</script>
